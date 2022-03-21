@@ -12,6 +12,8 @@ struct Home: View {
     @StateObject var taskModel: TaskViewModel = TaskViewModel()
     @Namespace var animation
     
+    @State private var fetchCount = 0
+
     // Coredate Context
     @Environment(\.managedObjectContext) var context
     
@@ -19,88 +21,124 @@ struct Home: View {
     @Environment(\.editMode) var editMode
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            LazyVStack(spacing: 0, pinnedViews: [.sectionHeaders]) {
-                Section {
-                    
-                    TaskView()
-                    
-                } header: {
-                    HeaderView()
-                }
-            }
-        }
-        .ignoresSafeArea(.container, edges: .top)
-        
-        // Edit button
-        .overlay(
-            Button(action: {
-                if editMode?.wrappedValue == .active {
-                    withAnimation { () -> () in
-                        editMode?.wrappedValue = .inactive
-                    }
-                }
-                else {
-                    withAnimation { () -> () in
-                        editMode?.wrappedValue = .active
-                    }                }
-            }, label: {
-                Image(systemName: "pencil")
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(Color(red: 255/255.0, green: 209/255.0, blue: 102/255.0),in: Circle())
-            })
-            .padding()
-            .offset(y: -60)
-            ,alignment: .bottomTrailing
+        ZStack {
+            Color(.systemGray6)
+                .edgesIgnoringSafeArea(.top)
             
-        )
+            VStack {
+                
+                HeaderView()
+                
+                ZStack {
+                    
+                    Color(.white)
+                        .cornerRadius(20, corners: [.topLeft, .topRight])
+                        .shadow(radius: 5)
+                        .edgesIgnoringSafeArea(.bottom)
+                    
+                    ScrollView {
+                        
+                        VStack {
+                            TaskView(taskColor: Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+                        }
+                        .hLeading()
+                    }
+                    
+                }
+                
+            }
+            // Edit button
+            .overlay(
+                Button(action: {
+                    if editMode?.wrappedValue == .active {
+                        withAnimation { () -> () in
+                            editMode?.wrappedValue = .inactive
+                        }
+                    }
+                    else {
+                        withAnimation { () -> () in
+                            editMode?.wrappedValue = .active
+                        }
+                    }
+                }, label: {
+                    Image(systemName: "pencil")
+                        .foregroundColor(.black)
+                        .padding()
+                        .background(Color(red: 252/255.0, green: 215/255.0, blue: 87/255.0))
+                        .clipShape(Circle())
+                        .shadow(radius: 5)
 
-        // Add button
-        .overlay(
-            Button(action: {
-                taskModel.addNewTask.toggle()
-            }, label: {
-                Image(systemName: "plus")
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(Color(red: 6/255.0, green: 214/255.0, blue: 160/255.0),in: Circle())
-            })
-            .padding()
-            ,alignment: .bottomTrailing
-          
-        )
-        .sheet(isPresented: $taskModel.addNewTask) {
-            taskModel.editTask = nil
-        } content: {
-            NewTask()
-                .environmentObject(taskModel)
+                })
+                .padding()
+                .offset(y: -60)
+                ,alignment: .bottomTrailing
+                
+            )
+
+            // Add button
+            .overlay(
+                Button(action: {
+                    taskModel.addNewTask.toggle()
+                }, label: {
+                    Image(systemName: "plus")
+                        .foregroundColor(.black)
+                        .padding()
+                        .background(Color(red: 53/255.0, green: 205/255.0, blue: 128/255.0))
+                        .clipShape(Circle())
+                        .shadow(radius: 5)
+                    
+                })
+                .padding()
+                ,alignment: .bottomTrailing
+              
+            )
+            .sheet(isPresented: $taskModel.addNewTask) {
+                taskModel.editTask = nil
+            } content: {
+                NewTask()
+                    .environmentObject(taskModel)
+            }
+            
         }
-
     }
     // TaskView
-    func TaskView() -> some View {
-        LazyVStack(spacing: 20) {
+    func TaskView(taskColor: Color) -> some View {
+        
+        LazyVStack {
             // Converting object as task model
-            DynamicFilteredView(dateToFilter: taskModel.currentDay) { (object: Task) in
-                TaskCardView(task: object)
+            DynamicFilteredView(dateToFilter: taskModel.currentDay, fetchCount: $fetchCount) { (object: Task) in
+                
+                
+                TaskCardView(task: object, taskColor: taskColor)
+                    .hLeading()
+                
+//                if fetchCount == 1 {
+//
+//
+//                }
+//                else {
+//                    Capsule()
+//                        .fill(Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+//                        .frame(width: 5, height: 50)
+//                        .shadow(radius: 5)
+//                        .offset(x: 45)
+//                        .hLeading()
+//                }
+
             }
         }
-        .padding()
-        .padding(.top)
     }
     
     // Task Card View
-    func TaskCardView(task: Task) -> some View {
-        // since core data values will give optinal data
-        HStack(alignment: editMode?.wrappedValue == .active ? .center : .top, spacing: 30) {
-            
+    func TaskCardView(task: Task, taskColor: Color) -> some View {
+        
+        HStack(alignment: editMode?.wrappedValue == .active ? .center : .top, spacing: 10) {
             
             if editMode?.wrappedValue == .active {
-                // Edit Button for current and future tasks
+
                 VStack(spacing: 10) {
                     
-                    if task.taskDate?.compare(Date()) == .orderedDescending || Calendar.current.isDateInToday(task.taskDate ?? Date()){
+                    if task.taskDate?.compare(Date()) == .orderedDescending || Calendar.current.isDateInToday(task.taskDate ?? Date()) {
                         Button {
                             taskModel.editTask = task
                             taskModel.addNewTask.toggle()
@@ -113,7 +151,7 @@ struct Home: View {
                     
                     Button {
                         withAnimation {
-                            //MARK: Deleting Task
+                            // Deleting Task
                             context.delete(task)
                             //Saving
                             try? context.save()
@@ -125,101 +163,100 @@ struct Home: View {
                     }
                     
                 }
-            } else {
-                VStack(spacing: 10) {
-                    Circle()
-                        .fill(task.isCompleted ? .green : (taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? .black : (taskModel.isCurrentHourAfterTaskTime(date: task.taskDate ?? Date()) ? .red : .clear)))
-                        .frame(width: 15, height: 15)
-                        .background(
-                            Circle()
-                                .stroke(.black, lineWidth: 1)
-                                .padding(-3)
-                        )
-                        .scaleEffect(!taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? 0.8 : 1)
+                
+            }
+            else {
+                HStack {
+                    Button {
+                        //Updating Task
+                        task.isCompleted.toggle()
+                        //Saving
+                        try? context.save()
+                    } label: {
+                        if !task.isCompleted {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
+                                .padding(10)
+                                .background(
+                                    Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0)
+                                )
+                                .cornerRadius(10)
+                        }
+                        else {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.white)
+                                .padding(10)
+                                .background(
+                                    Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0)
+                                )
+                                .cornerRadius(10)
+                        }
+                    }
+                 
                     
-                    Capsule()
-                        .stroke(.black, lineWidth: 1)
-                        .frame(width: 5)
+                    Circle()
+                        .fill(taskColor)
+                        .frame(width: 65, height: 65)
+                        .shadow(radius: 5)
                 }
+               
             }
             
-            VStack {
-                HStack(alignment: .top, spacing: 10) {
-                    VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(taskModel.extractDate(date: task.taskDate ?? Date(), format: "HH:ss"))
+                        .font(.system(size: 12, weight: .medium))
+                        .foregroundColor(.secondary)
+                    VStack(alignment: .leading, spacing: 3) {
+                            
                         Text(task.taskTitle ?? "")
                             .font(.title2.bold())
-                            .foregroundColor(taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? .white : .black)
-                        
+                            .foregroundColor(.black)
+                            .strikethrough(task.isCompleted ? true:false,color:.black)
+
+                            
                         Text(task.taskDescription ?? "")
                             .font(.callout)
-                            .foregroundStyle(taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? .white : .black)
+                            .foregroundColor(.black)
+                            .strikethrough(task.isCompleted ? true:false,color:.black)
+                        
                     }
-                    .hLeading()
-                    
-                    Text(task.taskDate?.formatted(date: .omitted, time: .shortened) ?? "")
-                        .foregroundStyle(taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? .white : .black)
                 }
-                if taskModel.isCurrentHour(date: task.taskDate ?? Date()) {
-                    HStack(spacing: 12) {
-                        //Check button
-                        if !task.isCompleted {
-                            Button {
-                                //MARK: Updating Task
-                                task.isCompleted = true
-                                //Saving
-                                try? context.save()
-                            } label: {
-                                Image(systemName: "checkmark")
-                                    .foregroundStyle(.black)
-                                    .padding(10)
-                                    .background(Color.white, in: RoundedRectangle(cornerRadius: 10))
-                            }
-                        }
-                        Text(task.isCompleted ? "Marked as Completed" : "Mark Task as Completed")
-                            .font(.system(size: task.isCompleted ? 14 : 16, weight: .bold))
-                            .foregroundColor(task.isCompleted ? .green : .white)
-                            .hLeading()
-                    }
-                    .padding(.top)
-                }
+            
             }
-            .padding(taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? 15 : 0)
-            .padding(.bottom, taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? 0 : 10)
-            .hLeading()
-            .background(
-                Color(red: 38/255.0, green: 84/255.0, blue: 124/255.0)
-                    .cornerRadius(25)
-                    .opacity(taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? 1 : 0)
-            )
         }
-        .hLeading()
+        .padding()
     }
     
     // HeaderView
     func HeaderView() -> some View {
-        VStack(spacing: 10){
-            HStack {
+    
+        VStack(spacing: 10) {
+            HStack() {
                 VStack(alignment: .leading, spacing: 30) {
                     Button {
-                        
+                                           
                     } label: {
-                        Image(systemName: "sidebar.left")
-                            .resizable()
-                            .foregroundColor(.black)
-                            .frame(width: 35, height: 25)
+                          Image(systemName: "sidebar.left")
+                              .resizable()
+                              .foregroundColor(.black)
+                              .frame(width: 35, height: 25)
                     }
                     
-                    HStack (spacing: 5) {
+                    
+                    HStack {
                         Text(taskModel.extractDate(date: taskModel.currentDay, format: "MMMM"))
                             .foregroundColor(.black)
+                            .font(.title2)
                             .bold()
-                            .font(.title)
                         
                         Text(taskModel.extractDate(date: taskModel.currentDay, format: "yyyy"))
-                            .foregroundColor(Color(red: 38/255.0, green: 84/255.0, blue: 124/255.0))
+                            .foregroundColor(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
+                            .font(.title2)
                             .bold()
-                            .font(.title)
+                            
                     }
+                    
                 }
                 .hLeading()
                 
@@ -228,41 +265,62 @@ struct Home: View {
                         .resizable()
                         .frame(width: 45, height: 45)
                         .clipShape(Circle())
-                    Spacer()
+                        .shadow(radius: 5)
                 }
+                .hTrailing()
             }
             
             HStack {
-                // Current Week View
+                Button {
+                    withAnimation {
+                       
+                        taskModel.weekCounter -= 1
+                        taskModel.fetchCurrentWeek()
+                        if taskModel.weekCounter == 0 {
+                            taskModel.currentDay = Date()
+                        }
+                        else {
+                            taskModel.currentDay = Calendar.current.date(byAdding: .day, value: taskModel.weekCounter*7, to: Date())!
+                        }
+                    }
+                    
+                } label: {
+                    Image(systemName: "arrowtriangle.left.fill")
+                        .foregroundColor(.black)
+                }
+                
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
+       
+                    HStack(spacing: 5) {
+                        
                         ForEach(taskModel.currentWeek, id: \.self) { day in
+
                             VStack(spacing: 10) {
-                                // EEE will return day as MON, TUE...
+                                
                                 Text(taskModel.extractDate(date: day, format: "EEE"))
                                     .font(.system(size: 15))
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(.secondary)
-                                    .foregroundColor(.black)
+                                    .foregroundColor(Color.secondary)
+                                
                                 
                                 Text(taskModel.extractDate(date: day, format: "dd"))
                                     .font(.system(size: 15))
                                     .fontWeight(.semibold)
-                                    .foregroundStyle(.primary)
                                     .foregroundColor(taskModel.isToday(date: day) ? .white : .black)
                                     .background(
                                         ZStack {
-                                            // Metched Geometry Effect
+                                         
                                             if taskModel.isToday(date: day) {
                                                 Capsule()
-                                                    .fill(Color(red: 38/255.0, green: 84/255.0, blue: 124/255.0))
-                                                    .frame(width: 50, height: 30)
+                                                    .fill(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
+                                                    .frame(width: 30, height: 30)
+                                                    .shadow(radius: 3)
                                                     .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
                                             }
+                                            
                                         }
                                     )
                             }
-                            // Shape
                             .frame(width: 45, height: 90)
                             .onTapGesture {
                                 withAnimation {
@@ -271,13 +329,28 @@ struct Home: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                }
+                
+                Button {
+                    withAnimation {
+                        taskModel.weekCounter += 1
+                        taskModel.fetchCurrentWeek()
+                        if taskModel.weekCounter == 0 {
+                            taskModel.currentDay = Date()
+                        }
+                        else {
+                            taskModel.currentDay = Calendar.current.date(byAdding: .day, value: taskModel.weekCounter*7, to: Date())!
+                        }
+                    }
+                } label: {
+                    Image(systemName: "arrowtriangle.right.fill")
+                        .foregroundColor(.black)
                 }
             }
+           
         }
         .padding()
-        .padding(.top, getSafeArea().top)
-        .background(Color.white)
+
     }
 }
 
@@ -311,5 +384,19 @@ extension View {
         }
         
         return safeArea
+    }
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+            clipShape( RoundedCorner(radius: radius, corners: corners) )
+        }
+}
+
+struct RoundedCorner: Shape {
+    
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

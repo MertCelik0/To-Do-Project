@@ -17,7 +17,8 @@ class TaskViewModel: ObservableObject {
     @Published var addNewTask: Bool = false
     // Edit Task View
     @Published var editTask: Task?
-    
+    // Select Week
+    @Published var weekCounter: Int = 0
     // Intializing
     init() {
         fetchCurrentWeek()
@@ -27,15 +28,14 @@ class TaskViewModel: ObservableObject {
     func fetchCurrentWeek() {
         let today = Date()
         let calendar = Calendar.current
+
+        let CWeek = calendar.date(byAdding: .weekOfMonth, value: weekCounter, to: today)
         
-        let week = calendar.dateInterval(of: .weekOfMonth, for: today)
+        let Week = calendar.dateInterval(of: .weekOfMonth, for: CWeek ?? Date())
         
-        guard let firstWeekDay = week?.start else {
-            return
-        }
-        
-        (1...7).forEach { day in
-            if let weekday = calendar.date(byAdding: .day, value: day, to: firstWeekDay) {
+        currentWeek.removeAll()
+        (0...6).forEach { day in
+            if let weekday = calendar.date(byAdding: .day, value: day, to: Week?.start ?? Date()) {
                 currentWeek.append(weekday)
             }
         }

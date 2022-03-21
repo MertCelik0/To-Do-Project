@@ -12,9 +12,10 @@ struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
     // Core Data Request
     @FetchRequest var request: FetchedResults<T>
     let content: (T)->Content
+    @Binding var fetchCount: Int
 
     // Building custom forEach which will give core data object to build view
-    init(dateToFilter: Date, @ViewBuilder content: @escaping (T)->Content) {
+    init(dateToFilter: Date, fetchCount: Binding<Int>, @ViewBuilder content: @escaping (T)->Content) {
         // Filter current date tasks
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: dateToFilter)
@@ -30,6 +31,8 @@ struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
         // adding sort
         _request = FetchRequest(entity: T.entity(), sortDescriptors: [.init(keyPath: \Task.taskDate, ascending: true)], predicate: predicate)
         self.content = content
+        self._fetchCount = fetchCount
+
     }
     
     var body: some View {
@@ -51,6 +54,10 @@ struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
                 ForEach(request, id: \.objectID) { object in
                     self.content(object)
                 }
+                .onReceive(request.publisher.count()) { _ in
+                    fetchCount = request.count
+                }
+                
             }
         }
     }

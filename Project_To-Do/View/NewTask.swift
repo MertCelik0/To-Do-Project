@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NewTask: View {
 
-    @Environment(\.dismiss) var dismiss
+  //  @Environment(\.dismiss) var dismiss
     
     //MARK: Task Values
     @State var taskTitle: String = ""
@@ -53,7 +53,7 @@ struct NewTask: View {
                 
                 if taskModel.editTask == nil {
                     Section {
-                        DatePicker("", selection: $taskDate, in: Date()..., displayedComponents: [.date, .hourAndMinute])
+                        DatePicker("", selection: $taskDate, displayedComponents: [.date, .hourAndMinute])
                             .datePickerStyle(.graphical)
                             .labelsHidden()
                           
@@ -66,7 +66,6 @@ struct NewTask: View {
             .navigationTitle("Add New Task")
             .navigationBarTitleDisplayMode(.inline)
             //MARK: Disabling Dismiss on Swipe
-            .interactiveDismissDisabled()
             //MARK: Action Buttons
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -85,16 +84,16 @@ struct NewTask: View {
                         // Save
                         try? context.save()
                         // Dissmissing View
-                        dismiss()
+                        //dismiss()
                     }
                     .disabled(taskTitle == "" || taskDescription == "")
                 }
                 
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
+//                ToolbarItem(placement: .navigationBarLeading) {
+//                    Button("Cancel") {
+//                        dismiss()
+//                    }
+//                }
             }
         }
 
