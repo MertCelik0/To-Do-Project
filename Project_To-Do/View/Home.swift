@@ -183,13 +183,11 @@ struct Home: View {
                             .font(.title2.bold())
                             .foregroundColor(.black)
                             .strikethrough(task.isCompleted ? true:false,color:.black)
-
                             
                         Text(task.taskDescription ?? "")
                             .font(.callout)
                             .foregroundColor(.black)
                             .strikethrough(task.isCompleted ? true:false,color:.black)
-                        
                     }
                 }
                 HStack {
@@ -203,18 +201,18 @@ struct Home: View {
                     } label: {
                         if !task.isCompleted {
                             Circle()
-                                .strokeBorder(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0), lineWidth: 2)
+                                .strokeBorder(taskColor, lineWidth: 2)
                                 .frame(width: 28, height: 28)
                          
                         }
                         else {
                             Circle()
-                                .strokeBorder(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0), lineWidth: 2)
+                                .strokeBorder(taskColor, lineWidth: 2)
                                 .frame(width: 28, height: 28)
                                 .background(
                                     ZStack {
                                         Circle()
-                                            .fill(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
+                                            .fill(taskColor)
                                             .frame(width: 28, height: 28)
                                         Image(systemName: "checkmark")
                                             .resizable()
