@@ -10,7 +10,9 @@ import SwiftUI
 class TaskViewModel: ObservableObject {
     
     // Current Week Days
-    @Published var currentWeek: [Date] = []
+    @Published var Week: [Date] = []
+    // Selected Day
+    @Published var selectedDay: Date = Date()
     // Current Day
     @Published var currentDay: Date = Date()
     // New Task View
@@ -19,6 +21,7 @@ class TaskViewModel: ObservableObject {
     @Published var editTask: Task?
     // Select Week
     @Published var weekCounter: Int = 0
+
     // Intializing
     init() {
         fetchCurrentWeek()
@@ -31,12 +34,12 @@ class TaskViewModel: ObservableObject {
 
         let CWeek = calendar.date(byAdding: .weekOfMonth, value: weekCounter, to: today)
         
-        let Week = calendar.dateInterval(of: .weekOfMonth, for: CWeek ?? Date())
+        let selectedWeek = calendar.dateInterval(of: .weekOfMonth, for: CWeek ?? Date())
         
-        currentWeek.removeAll()
-        (0...6).forEach { day in
-            if let weekday = calendar.date(byAdding: .day, value: day, to: Week?.start ?? Date()) {
-                currentWeek.append(weekday)
+        Week.removeAll()
+        (1...7).forEach { day in
+            if let weekday = calendar.date(byAdding: .day, value: day, to: selectedWeek?.start ?? Date()) {
+                Week.append(weekday)
             }
         }
     }
@@ -49,10 +52,16 @@ class TaskViewModel: ObservableObject {
         return formatter.string(from: date)
     }
     
+    // Checking if the selected date
+    func isSelectedDate(date: Date) -> Bool {
+        let calendar = Calendar.current
+        return calendar.isDate(selectedDay, inSameDayAs: date)
+    }
+    
     // Checking if the current Date is Today
     func isToday(date: Date) -> Bool {
         let calendar = Calendar.current
-        return calendar.isDate(currentDay, inSameDayAs: date)
+        return calendar.isDate(Date(), inSameDayAs: date)
     }
     
     // Checking if the currentHour is task hour

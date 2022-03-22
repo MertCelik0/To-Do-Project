@@ -8,14 +8,14 @@
 import SwiftUI
 import CoreData
 
-struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
-    // Core Data Request
-    @FetchRequest var request: FetchedResults<T>
-    let content: (T)->Content
-    @Binding var fetchCount: Int
 
-    // Building custom forEach which will give core data object to build view
-    init(dateToFilter: Date, fetchCount: Binding<Int>, @ViewBuilder content: @escaping (T)->Content) {
+struct DynamicFilteredView<Content: View>: View {
+    let fetchRequest: FetchRequest<Task>
+    let content: (Task) -> Content
+
+    init(dateToFilter: Date, @ViewBuilder content: @escaping (Task) -> Content) {
+        guard let entityName = Task.entity().name else { fatalError("Unknown entity") }
+
         // Filter current date tasks
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: dateToFilter)
@@ -27,17 +27,21 @@ struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
         // This will fetch task between today and tommorow whic is 24 hrs
         let predicate = NSPredicate(format: "\(filterKey) >= %@ AND \(filterKey) < %@", argumentArray: [today,tommorow])
         
-        // Intializing request qith nspredicate
-        // adding sort
-        _request = FetchRequest(entity: T.entity(), sortDescriptors: [.init(keyPath: \Task.taskDate, ascending: true)], predicate: predicate)
-        self.content = content
-        self._fetchCount = fetchCount
+        let request = NSFetchRequest<Task>(entityName: entityName)
+        request.sortDescriptors = [.init(keyPath: \Task.taskDate, ascending: true)]
+        request.predicate = predicate
 
+        self.init(fetchRequest: request, content: content)
+    }
+
+    init(fetchRequest: NSFetchRequest<Task>, @ViewBuilder content: @escaping (Task) -> Content) {
+        self.fetchRequest = FetchRequest<Task>(fetchRequest: fetchRequest)
+        self.content = content
     }
     
     var body: some View {
         Group {
-            if request.isEmpty {
+            if fetchRequest.wrappedValue.isEmpty {
                 VStack {
                     Image(systemName: "clock")
                         .resizable()
@@ -48,17 +52,73 @@ struct DynamicFilteredView<Content: View,T>: View  where T: NSManagedObject {
                         .fontWeight(.semibold)
                         .offset(y: 100)
                 }
-               
             }
             else {
-                ForEach(request, id: \.objectID) { object in
-                    self.content(object)
+                VStack {
+                    ForEach(fetchRequest.wrappedValue, id: \.objectID) { object in
+                        self.content(object)
+                    }
                 }
-                .onReceive(request.publisher.count()) { _ in
-                    fetchCount = request.count
+            }
+        }
+        
+    }
+}
+
+struct DynamicFilteredCountView<Content: View>: View {
+    let fetchRequest: FetchRequest<Task>
+    let content: (Task) -> Content
+
+    init(dateToFilter: Date, @ViewBuilder content: @escaping (Task) -> Content) {
+        guard let entityName = Task.entity().name else { fatalError("Unknown entity") }
+
+        // Filter current date tasks
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: dateToFilter)
+        let tommorow = calendar.date(byAdding: .day, value: 1, to: today)!
+                
+        // Filter key
+        let filterKey = "taskDate"
+        
+        // This will fetch task between today and tommorow whic is 24 hrs
+        let predicate = NSPredicate(format: "\(filterKey) >= %@ AND \(filterKey) < %@", argumentArray: [today,tommorow])
+        
+        let request = NSFetchRequest<Task>(entityName: entityName)
+        request.sortDescriptors = [.init(keyPath: \Task.taskDate, ascending: true)]
+        request.predicate = predicate
+
+        self.init(fetchRequest: request, content: content)
+    }
+
+    init(fetchRequest: NSFetchRequest<Task>, @ViewBuilder content: @escaping (Task) -> Content) {
+        self.fetchRequest = FetchRequest<Task>(fetchRequest: fetchRequest)
+        self.content = content
+    }
+    
+    var body: some View {
+        Group {
+            if fetchRequest.wrappedValue.isEmpty {
+            }
+            else {
+                HStack(spacing: -5) {
+                    // fetchRequest.wrappedValue[0...2] max 3 value
+                    if fetchRequest.wrappedValue.count >= 4 {
+                        ForEach(fetchRequest.wrappedValue[0...3] , id: \.objectID) { object in
+                            self.content(object)
+                        }
+                    }
+                    else {
+                        ForEach(fetchRequest.wrappedValue , id: \.objectID) { object in
+                            self.content(object)
+                        }
+                    }
+                    
                 }
+                
                 
             }
         }
     }
+    
 }
+

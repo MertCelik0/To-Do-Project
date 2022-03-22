@@ -11,14 +11,15 @@ struct Home: View {
     
     @StateObject var taskModel: TaskViewModel = TaskViewModel()
     @Namespace var animation
-    
-    @State private var fetchCount = 0
 
     // Coredate Context
     @Environment(\.managedObjectContext) var context
     
     // Edit Button Context
     @Environment(\.editMode) var editMode
+    
+    // Week Days Task Count
+    @State  var fetchCount: Int = 0
 
     var body: some View {
         ZStack {
@@ -47,33 +48,33 @@ struct Home: View {
                 }
                 
             }
-            // Edit button
-            .overlay(
-                Button(action: {
-                    if editMode?.wrappedValue == .active {
-                        withAnimation { () -> () in
-                            editMode?.wrappedValue = .inactive
-                        }
-                    }
-                    else {
-                        withAnimation { () -> () in
-                            editMode?.wrappedValue = .active
-                        }
-                    }
-                }, label: {
-                    Image(systemName: "pencil")
-                        .foregroundColor(.black)
-                        .padding()
-                        .background(Color(red: 252/255.0, green: 215/255.0, blue: 87/255.0))
-                        .clipShape(Circle())
-                        .shadow(radius: 5)
-
-                })
-                .padding()
-                .offset(y: -60)
-                ,alignment: .bottomTrailing
-                
-            )
+//            // Edit button
+//            .overlay(
+//                Button(action: {
+//                    if editMode?.wrappedValue == .active {
+//                        withAnimation { () -> () in
+//                            editMode?.wrappedValue = .inactive
+//                        }
+//                    }
+//                    else {
+//                        withAnimation { () -> () in
+//                            editMode?.wrappedValue = .active
+//                        }
+//                    }
+//                }, label: {
+//                    Image(systemName: "pencil")
+//                        .foregroundColor(.black)
+//                        .padding()
+//                        .background(Color(red: 252/255.0, green: 215/255.0, blue: 87/255.0))
+//                        .clipShape(Circle())
+//                        .shadow(radius: 5)
+//
+//                })
+//                .padding()
+//                .offset(y: -60)
+//                ,alignment: .bottomTrailing
+//
+//            )
 
             // Add button
             .overlay(
@@ -81,9 +82,9 @@ struct Home: View {
                     taskModel.addNewTask.toggle()
                 }, label: {
                     Image(systemName: "plus")
-                        .foregroundColor(.black)
+                        .foregroundColor(.white)
                         .padding()
-                        .background(Color(red: 53/255.0, green: 205/255.0, blue: 128/255.0))
+                        .background(appThemeColor)
                         .clipShape(Circle())
                         .shadow(radius: 5)
                     
@@ -106,12 +107,10 @@ struct Home: View {
         
         LazyVStack {
             // Converting object as task model
-            DynamicFilteredView(dateToFilter: taskModel.currentDay, fetchCount: $fetchCount) { (object: Task) in
-                
+            DynamicFilteredView(dateToFilter: taskModel.selectedDay) { (object: Task) in
                 
                 TaskCardView(task: object, taskColor: taskColor)
                     .hLeading()
-                
 //                if fetchCount == 1 {
 //
 //
@@ -126,71 +125,70 @@ struct Home: View {
 //                }
 
             }
+            
         }
     }
     
     // Task Card View
     func TaskCardView(task: Task, taskColor: Color) -> some View {
         
-        HStack(alignment: editMode?.wrappedValue == .active ? .center : .top, spacing: 10) {
+        HStack(alignment: .top, spacing: 10) {
             
-            if editMode?.wrappedValue == .active {
+//           if editMode?.wrappedValue == .active {
 
-                VStack(spacing: 10) {
-                    
-                    if task.taskDate?.compare(Date()) == .orderedDescending || Calendar.current.isDateInToday(task.taskDate ?? Date()) {
-                        Button {
-                            taskModel.editTask = task
-                            taskModel.addNewTask.toggle()
-                        } label: {
-                            Image(systemName: "pencil.circle.fill")
-                                .font(.title)
-                                .foregroundColor(.primary)
-                        }
-                    }
-                    
-                    Button {
-                        withAnimation {
-                            // Deleting Task
-                            context.delete(task)
-                            //Saving
-                            try? context.save()
-                        }
-                    } label: {
-                        Image(systemName: "minus.circle.fill")
-                            .font(.title)
-                            .foregroundColor(.red)
-                    }
-                    
+//                VStack(spacing: 10) {
+//
+//                    if task.taskDate?.compare(Date()) == .orderedDescending || Calendar.current.isDateInToday(task.taskDate ?? Date()) {
+//                        Button {
+//                            taskModel.editTask = task
+//                            taskModel.addNewTask.toggle()
+//                        } label: {
+//                            Image(systemName: "pencil.circle.fill")
+//                                .font(.title)
+//                                .foregroundColor(.primary)
+//                        }
+//                    }
+//
+//                    Button {
+//                        withAnimation {
+//                            // Deleting Task
+//                            context.delete(task)
+//                            //Saving
+//                            try? context.save()
+//                        }
+//                    } label: {
+//                        Image(systemName: "minus.circle.fill")
+//                            .font(.title)
+//                            .foregroundColor(.red)
+//                    }
+//
+//                }
+//
+//            }
+//            else {
+//            }
+            
+         
+            HStack {
+                VStack(alignment: .center) {
+                    Circle()
+                        .fill(taskColor)
+                        .frame(width: 65, height: 65)
+                        .shadow(radius: 5)
                 }
                 
-            }
-            else {
-                Circle()
-                    .fill(taskColor)
-                    .frame(width: 65, height: 65)
-                    .shadow(radius: 5)
-            }
-            
-            HStack {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 5) {
                     Text(taskModel.extractDate(date: task.taskDate ?? Date(), format: "HH:ss"))
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.secondary)
-                    VStack(alignment: .leading, spacing: 3) {
                             
-                        Text(task.taskTitle ?? "")
-                            .font(.title2.bold())
-                            .foregroundColor(.black)
-                            .strikethrough(task.isCompleted ? true:false,color:.black)
-                            
-                        Text(task.taskDescription ?? "")
-                            .font(.callout)
-                            .foregroundColor(.black)
-                            .strikethrough(task.isCompleted ? true:false,color:.black)
-                    }
+                    Text(task.taskTitle ?? "")
+                        .font(.body.bold())
+                        .foregroundColor(task.isCompleted ? .secondary : .black)
+                        .strikethrough(task.isCompleted ? true : false, color: task.isCompleted ? .secondary : .black)
                 }
-                HStack {
+                
+                VStack(alignment: .center) {
                     Button {
                         withAnimation {
                             //Updating Task
@@ -202,18 +200,18 @@ struct Home: View {
                         if !task.isCompleted {
                             Circle()
                                 .strokeBorder(taskColor, lineWidth: 2)
-                                .frame(width: 28, height: 28)
+                                .frame(width: 24, height: 24)
                          
                         }
                         else {
                             Circle()
                                 .strokeBorder(taskColor, lineWidth: 2)
-                                .frame(width: 28, height: 28)
+                                .frame(width: 24, height: 24)
                                 .background(
                                     ZStack {
                                         Circle()
                                             .fill(taskColor)
-                                            .frame(width: 28, height: 28)
+                                            .frame(width: 24, height: 24)
                                         Image(systemName: "checkmark")
                                             .resizable()
                                             .frame(width: 10, height: 10, alignment: .center)
@@ -246,14 +244,14 @@ struct Home: View {
                     
                     
                     HStack {
-                        Text(taskModel.extractDate(date: taskModel.currentDay, format: "MMMM"))
+                        Text(taskModel.extractDate(date: taskModel.selectedDay, format: "MMMM"))
                             .foregroundColor(.black)
-                            .font(.title2)
+                            .font(.title)
                             .bold()
                         
-                        Text(taskModel.extractDate(date: taskModel.currentDay, format: "yyyy"))
-                            .foregroundColor(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
-                            .font(.title2)
+                        Text(taskModel.extractDate(date: taskModel.selectedDay, format: "yyyy"))
+                            .foregroundColor(appThemeColor)
+                            .font(.title)
                             .bold()
                             
                     }
@@ -274,15 +272,9 @@ struct Home: View {
             HStack {
                 Button {
                     withAnimation {
-                       
                         taskModel.weekCounter -= 1
                         taskModel.fetchCurrentWeek()
-                        if taskModel.weekCounter == 0 {
-                            taskModel.currentDay = Date()
-                        }
-                        else {
-                            taskModel.currentDay = Calendar.current.date(byAdding: .day, value: taskModel.weekCounter*7, to: Date())!
-                        }
+                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: taskModel.selectedDay)!
                     }
                     
                 } label: {
@@ -292,10 +284,9 @@ struct Home: View {
                 
                 ScrollView(.horizontal, showsIndicators: false) {
        
-                    HStack(spacing: 5) {
-                        
-                        ForEach(taskModel.currentWeek, id: \.self) { day in
-
+                    HStack(alignment: .center, spacing: 4) {
+                        ForEach(taskModel.Week, id: \.self) { day in
+                            
                             VStack(spacing: 10) {
                                 
                                 Text(taskModel.extractDate(date: day, format: "EEE"))
@@ -307,41 +298,59 @@ struct Home: View {
                                 Text(taskModel.extractDate(date: day, format: "dd"))
                                     .font(.system(size: 15))
                                     .fontWeight(.semibold)
-                                    .foregroundColor(taskModel.isToday(date: day) ? .white : .black)
+                                    .foregroundColor(taskModel.isSelectedDate(date: day) ? .white : (taskModel.isToday(date: day) ? .red : .black))
                                     .background(
-                                        ZStack {
-                                         
-                                            if taskModel.isToday(date: day) {
-                                                Capsule()
-                                                    .fill(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
-                                                    .frame(width: 30, height: 30)
-                                                    .shadow(radius: 3)
-                                                    .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
+                                        VStack {
+                                            ZStack {
+                                                VStack {
+                                                    if taskModel.isSelectedDate(date: day) {
+                                                        Capsule()
+                                                            .fill(appThemeColor)
+                                                            .frame(width: 30, height: 30)
+                                                            .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
+                                                    }
+                                                }
+                                                    
+                                                DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
+                                                    ZStack {
+                                                        Circle()
+                                                            .fill(Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+                                                            .opacity(object.isCompleted ? 0.5 : 1)
+                                                            .frame(width: 15, height: 15)
+                                                            .background(
+                                                                Circle()
+                                                                    .strokeBorder(.white, lineWidth: 5)
+                                                                    .frame(width: 15, height: 15)
+                                                            )
+                                                        Text(object.taskTitle?.prefix(1) ?? "")
+                                                            .foregroundColor(.white)
+                                                            .font(.system(size: 10))
+                                                        
+                                                    }
+                                                   
+                                                    }
+                                                .offset(y: 25)
                                             }
-                                            
                                         }
                                     )
                             }
+                            .padding(.bottom)
                             .frame(width: 45, height: 90)
                             .onTapGesture {
                                 withAnimation {
-                                    taskModel.currentDay = day
+                                    taskModel.selectedDay = day
                                 }
                             }
                         }
                     }
+                    
                 }
                 
                 Button {
                     withAnimation {
                         taskModel.weekCounter += 1
                         taskModel.fetchCurrentWeek()
-                        if taskModel.weekCounter == 0 {
-                            taskModel.currentDay = Date()
-                        }
-                        else {
-                            taskModel.currentDay = Calendar.current.date(byAdding: .day, value: taskModel.weekCounter*7, to: Date())!
-                        }
+                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: taskModel.selectedDay)!
                     }
                 } label: {
                     Image(systemName: "arrowtriangle.right.fill")
