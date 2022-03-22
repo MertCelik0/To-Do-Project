@@ -252,7 +252,7 @@ struct Home: View {
                             } label: {
                                 Image(systemName: "shield.fill")
                                     .resizable()
-                                    .frame(width: 35, height: 35)
+                                    .frame(width: 25, height: 25)
                                     .foregroundColor(appThemeColor)
                             }
                             
@@ -261,7 +261,7 @@ struct Home: View {
                             } label: {
                                 Image(systemName: "gear")
                                     .resizable()
-                                    .frame(width: 35, height: 35)
+                                    .frame(width: 25, height: 25)
                                     .clipShape(Circle())
                                     .foregroundColor(appThemeColor)
 
