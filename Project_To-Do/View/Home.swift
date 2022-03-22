@@ -166,40 +166,10 @@ struct Home: View {
                 
             }
             else {
-                HStack {
-                    Button {
-                        //Updating Task
-                        task.isCompleted.toggle()
-                        //Saving
-                        try? context.save()
-                    } label: {
-                        if !task.isCompleted {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
-                                .padding(10)
-                                .background(
-                                    Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0)
-                                )
-                                .cornerRadius(10)
-                        }
-                        else {
-                            Image(systemName: "checkmark")
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .background(
-                                    Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0)
-                                )
-                                .cornerRadius(10)
-                        }
-                    }
-                 
-                    
-                    Circle()
-                        .fill(taskColor)
-                        .frame(width: 65, height: 65)
-                        .shadow(radius: 5)
-                }
-               
+                Circle()
+                    .fill(taskColor)
+                    .frame(width: 65, height: 65)
+                    .shadow(radius: 5)
             }
             
             HStack {
@@ -222,7 +192,40 @@ struct Home: View {
                         
                     }
                 }
-            
+                HStack {
+                    Button {
+                        withAnimation {
+                            //Updating Task
+                            task.isCompleted.toggle()
+                            //Saving
+                            try? context.save()
+                        }
+                    } label: {
+                        if !task.isCompleted {
+                            Circle()
+                                .strokeBorder(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0), lineWidth: 2)
+                                .frame(width: 28, height: 28)
+                         
+                        }
+                        else {
+                            Circle()
+                                .strokeBorder(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0), lineWidth: 2)
+                                .frame(width: 28, height: 28)
+                                .background(
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0))
+                                            .frame(width: 28, height: 28)
+                                        Image(systemName: "checkmark")
+                                            .resizable()
+                                            .frame(width: 10, height: 10, alignment: .center)
+                                            .foregroundColor(.white)
+                                    }
+                                )
+                        }
+                    }
+                }
+                .hTrailing()
             }
         }
         .padding()
