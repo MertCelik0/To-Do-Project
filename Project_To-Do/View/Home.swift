@@ -233,15 +233,43 @@ struct Home: View {
         VStack(spacing: 10) {
             HStack() {
                 VStack(alignment: .leading, spacing: 30) {
-                    Button {
-                                           
-                    } label: {
-                          Image(systemName: "sidebar.left")
-                              .resizable()
-                              .foregroundColor(.black)
-                              .frame(width: 35, height: 25)
-                    }
                     
+                    HStack {
+                        HStack {
+                            Button {
+                                                   
+                            } label: {
+                                Image("ProfilePhoto")
+                                    .resizable()
+                                    .frame(width: 45, height: 45)
+                                    .clipShape(Circle())
+                            }
+                        }
+                        .hLeading()
+                        HStack {
+                            Button {
+                                                   
+                            } label: {
+                                Image(systemName: "shield.fill")
+                                    .resizable()
+                                    .frame(width: 35, height: 35)
+                                    .foregroundColor(appThemeColor)
+                            }
+                            
+                            Button {
+                                                   
+                            } label: {
+                                Image(systemName: "gear")
+                                    .resizable()
+                                    .frame(width: 35, height: 35)
+                                    .clipShape(Circle())
+                                    .foregroundColor(appThemeColor)
+
+                            }
+                        }
+                        .hTrailing()
+                        
+                    }
                     
                     HStack {
                         Text(taskModel.extractDate(date: taskModel.selectedDay, format: "MMMM"))
@@ -259,14 +287,7 @@ struct Home: View {
                 }
                 .hLeading()
                 
-                VStack (alignment: .leading, spacing: 10) {
-                    Image("ProfilePhoto")
-                        .resizable()
-                        .frame(width: 45, height: 45)
-                        .clipShape(Circle())
-                        .shadow(radius: 5)
-                }
-                .hTrailing()
+  
             }
             
             HStack {

@@ -10,10 +10,10 @@ import SwiftUI
 struct NewTask: View {
 
   //  @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.presentationMode) var presentationMode
+
     //MARK: Task Values
     @State var taskTitle: String = ""
-    @State var taskDescription: String = ""
     @State var taskDate: Date = Date()
     @State var date = Date()
 
@@ -38,19 +38,6 @@ struct NewTask: View {
                     Text("Task Title")
                 }
                 
-                Section {
-                    TextField("Nothing", text: $taskDescription) {
-                        UIApplication.shared.endEditing()
-                    }
-                    .onAppear {
-                        if let task = taskModel.editTask {
-                            taskDescription = task.taskDescription ?? ""
-                        }
-                    }
-                } header: {
-                    Text("Task Description")
-                }
-                
                 if taskModel.editTask == nil {
                     Section {
                         DatePicker("", selection: $taskDate, displayedComponents: [.date, .hourAndMinute])
@@ -72,28 +59,26 @@ struct NewTask: View {
                     Button("Save") {
                         if let task = taskModel.editTask {
                             task.taskTitle = taskTitle
-                            task.taskDescription = taskDescription
                         }
                         else {
                             let task = Task(context: context)
                             task.taskTitle = taskTitle
-                            task.taskDescription = taskDescription
                             task.taskDate = taskDate
                         }
                         
                         // Save
                         try? context.save()
                         // Dissmissing View
-                        //dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     }
-                    .disabled(taskTitle == "" || taskDescription == "")
+                    .disabled(taskTitle == "")
                 }
                 
-//                ToolbarItem(placement: .navigationBarLeading) {
-//                    Button("Cancel") {
-//                        dismiss()
-//                    }
-//                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
+                }
             }
         }
 
