@@ -17,37 +17,67 @@ struct Home: View {
     
     // Edit Button Context
     @Environment(\.editMode) var editMode
-    
-    // Week Days Task Count
-    @State  var fetchCount: Int = 0
 
+    @State var cardShow = false
+    
+    @State var selectedDate: Date = Date()
+    
     var body: some View {
-        ZStack {
-            Color(.systemGray6)
-                .edgesIgnoringSafeArea(.top)
-            
-            VStack {
-                
-                HeaderView()
-                
-                ZStack {
-                    
-                    Color(.white)
-                        .cornerRadius(20, corners: [.topLeft, .topRight])
-                        .shadow(radius: 5)
-                        .edgesIgnoringSafeArea(.bottom)
-                    
-                    ScrollView {
-                        
-                        VStack {
-                            TaskView(taskColor: Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+        NavigationView {
+            ZStack {
+                VStack(spacing: 0) {
+                    Section {
+                        ScrollView(showsIndicators: false) {
+                            VStack{
+                                TaskView(taskColor: Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+                            }
+                            .padding(.bottom, 150)
                         }
-                        .hLeading()
+                    } header: {
+                        HeaderView()
+                            .background(
+                                Color(.systemGray6)
+                                    .shadow(radius: 2)
+                                    .edgesIgnoringSafeArea(.top)
+                            )
                     }
-                    
+                    .edgesIgnoringSafeArea(.bottom)
+
+                }
+                .navigationBarTitle("")
+                .navigationBarHidden(true)
+                .overlay(
+                    Button(action: {
+                        taskModel.addNewTask.toggle()
+                    }, label: {
+                        Image(systemName: "plus")
+                            .frame(width: 30, height: 30)
+                            .foregroundColor(.white)
+                            .font(.system(size: 28))
+                            .padding()
+                            .background(appThemeColor)
+                            .clipShape(Circle())
+                            .shadow(radius: 5)
+                        
+                    })
+                    .padding()
+                    ,alignment: .bottomTrailing
+                  
+                )
+                .sheet(isPresented: $taskModel.addNewTask) {
+                    taskModel.editTask = nil
+                } content: {
+                    NewTask()
+                        .environmentObject(taskModel)
                 }
                 
+                CardContent()
+                    .animation(.default)
             }
+           
+        }
+        
+
 //            // Edit button
 //            .overlay(
 //                Button(action: {
@@ -76,31 +106,6 @@ struct Home: View {
 //
 //            )
 
-            // Add button
-            .overlay(
-                Button(action: {
-                    taskModel.addNewTask.toggle()
-                }, label: {
-                    Image(systemName: "plus")
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(appThemeColor)
-                        .clipShape(Circle())
-                        .shadow(radius: 5)
-                    
-                })
-                .padding()
-                ,alignment: .bottomTrailing
-              
-            )
-            .sheet(isPresented: $taskModel.addNewTask) {
-                taskModel.editTask = nil
-            } content: {
-                NewTask()
-                    .environmentObject(taskModel)
-            }
-            
-        }
     }
     // TaskView
     func TaskView(taskColor: Color) -> some View {
@@ -170,8 +175,9 @@ struct Home: View {
             
          
             HStack {
+                
                 VStack(alignment: .center) {
-                    Circle()
+                    Capsule()
                         .fill(taskColor)
                         .frame(width: 65, height: 65)
                         .shadow(radius: 5)
@@ -201,7 +207,6 @@ struct Home: View {
                             Circle()
                                 .strokeBorder(taskColor, lineWidth: 2)
                                 .frame(width: 24, height: 24)
-                         
                         }
                         else {
                             Circle()
@@ -229,13 +234,56 @@ struct Home: View {
     
     // HeaderView
     func HeaderView() -> some View {
-    
-        VStack(spacing: 10) {
+        
+        VStack(spacing: 20) {
             HStack() {
                 VStack(alignment: .leading, spacing: 10) {
-                    
                     HStack {
                         HStack {
+                            Text(taskModel.extractDate(date: taskModel.selectedDay, format: "MMMM"))
+                                .foregroundColor(.black)
+                                .font(.title)
+                                .bold()
+                            
+                            Text(taskModel.extractDate(date: taskModel.selectedDay, format: "yyyy"))
+                                .foregroundColor(.black)
+                                .font(.title)
+                                .bold()
+                                
+                        }
+                        .hLeading()
+                        HStack(spacing: 20) {
+                            Button {
+                                                   
+                            } label: {
+                                Image(systemName: "bolt.shield")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(appThemeColor)
+                            }
+                            
+                            
+                            Button {
+                                cardShow.toggle()
+                            } label: {
+                                Image(systemName: "calendar")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(appThemeColor)
+                            }
+                            
+                            
+                            Button {
+                                                   
+                            } label: {
+                                Image(systemName: "gearshape")
+                                    .resizable()
+                                    .frame(width: 25, height: 25)
+                                    .clipShape(Circle())
+                                    .foregroundColor(appThemeColor)
+
+                            }
+                            
                             Button {
                                                    
                             } label: {
@@ -243,46 +291,16 @@ struct Home: View {
                                     .resizable()
                                     .frame(width: 45, height: 45)
                                     .clipShape(Circle())
-                            }
-                        }
-                        .hLeading()
-                        HStack(spacing: 20) {
-                            Button {
-                                                   
-                            } label: {
-                                Image(systemName: "shield.fill")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(appThemeColor)
-                            }
-                            
-                            Button {
-                                                   
-                            } label: {
-                                Image(systemName: "gear")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .clipShape(Circle())
-                                    .foregroundColor(appThemeColor)
-
+                                    .overlay(Circle()
+                                               .stroke(appThemeColor, lineWidth: 3))
+                                    .shadow(radius: 10)
                             }
                         }
                         .hTrailing()
                         
                     }
                     
-                    HStack {
-                        Text(taskModel.extractDate(date: taskModel.selectedDay, format: "MMMM"))
-                            .foregroundColor(.black)
-                            .font(.title)
-                            .bold()
-                        
-                        Text(taskModel.extractDate(date: taskModel.selectedDay, format: "yyyy"))
-                            .foregroundColor(appThemeColor)
-                            .font(.title)
-                            .bold()
-                            
-                    }
+
                     
                 }
                 .hLeading()
@@ -319,7 +337,7 @@ struct Home: View {
                                 Text(taskModel.extractDate(date: day, format: "dd"))
                                     .font(.system(size: 15))
                                     .fontWeight(.semibold)
-                                    .foregroundColor(taskModel.isSelectedDate(date: day) ? .white : (taskModel.isToday(date: day) ? .red : .black))
+                                    .foregroundColor(taskModel.isSelectedDate(date: day) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
                                     .background(
                                         VStack {
                                             ZStack {
@@ -378,12 +396,64 @@ struct Home: View {
                         .foregroundColor(.black)
                 }
             }
-           
+            
         }
         .padding()
-
+ 
     }
+    
+    func CardContent() -> some View {
+        ZStack {
+            // background
+            GeometryReader { _ in
+                EmptyView()
+            }
+            .background(Color.gray.opacity(0.5))
+            .opacity(cardShow ? 1: 0)
+            .animation(Animation.easeIn)
+            .onTapGesture {
+                cardShow.toggle()
+            }
+            
+            //Card
+            VStack {
+                Spacer()
+                VStack {
+                    VStack(spacing: 5) {
+                        DatePicker("", selection: $selectedDate, displayedComponents: .date)
+                            .datePickerStyle(.graphical)
+                        
+                        Button {
+                            
+                        } label: {
+                            Text("Go To Selected Date")
+                                .foregroundColor(.white)
+                                .font(.system(size: 15))
+                                .frame(width: UIScreen.main.bounds.width/1.3, height: 50)
+                                .background(appThemeColor)
+                                .cornerRadius(10)
+                                .padding()
+                        }
+                    }
+                    .padding()
+                }
+                .background(Color.white)
+                .frame(height: UIScreen.main.bounds.height/2)
+                .cornerRadius(20, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+                .shadow(color: cardShow ? .gray : .clear, radius: cardShow ? 1 : 0)
+                .offset(y: cardShow ? 0 : UIScreen.main.bounds.height/2)
+                .opacity(cardShow ? 1 : 0)
+                .padding()
+                .animation(.default)
+
+            }
+        }
+        .edgesIgnoringSafeArea(.all)
+    }
+
 }
+
+
 
 struct Home_Previews: PreviewProvider {
     static var previews: some View {

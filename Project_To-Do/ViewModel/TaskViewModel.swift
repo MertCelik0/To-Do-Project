@@ -22,6 +22,8 @@ class TaskViewModel: ObservableObject {
     // Select Week
     @Published var weekCounter: Int = 0
 
+   
+    
     // Intializing
     init() {
         fetchCurrentWeek()
@@ -82,5 +84,71 @@ class TaskViewModel: ObservableObject {
         let currenthour = calendar.component(.hour, from: Date())
         return currenthour >= hour
     }
+    
+    func getHoursAndMinutes(hour: Int, min: Int) -> String {
+        var components = DateComponents()
+        components.hour = hour
+        components.minute = min
+        let date = Calendar.current.date(from: components)
+        
+        return extractDate(date: date ?? Date(), format: "HH:mm")
+    }
+    
+    func getMinuteForData(selectedMin: Int) -> Int {
+        var minData: Int = 0
+        if selectedMin <= 14 {
+            minData = 11
+        }
+        else {
+            minData = 3
+        }
+        return minData
+    }
+    
+    func getMinutemultiplyData(selectedMin: Int) -> Int {
+        var multiplyData: Int = 0
+        if selectedMin <= 14 {
+            multiplyData = 5
+        }
+        else {
+            multiplyData = 15
+        }
+        return multiplyData
+    }
+    
+    // Get task height
+//    func getTaskHeight(taskHour: Int) -> CGFloat {
+//        var value: Float = 0
+//      
+//        let Hour = Int(taskHour)!
+//        
+//        if Hour == 0 {
+//            if Minute >= 0 && Minute >= 15 {
+//                value = 0.10
+//            }
+//            else if Minute >= 16 && Minute >= 30 {
+//                value = 0.25
+//            }
+//            else if Minute >= 31 && Minute >= 45 {
+//                value = 0.40
+//            }
+//            else if Minute >= 46 && Minute >= 60 {
+//                value = 0.55
+//            }
+//        }
+//        else if Hour == 1 {
+//            if Minute >= 0 && Minute >= 30 {
+//                value = 1.15
+//           }
+//            else if Minute >= 31 && Minute >= 60 {
+//                value = 1.45
+//           }
+//        }
+//        else{
+//            value = 2
+//        }
+//        
+//        return CGFloat(65 * (1.0 + value))
+//    }
 }
 

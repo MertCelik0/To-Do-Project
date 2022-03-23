@@ -7,4 +7,4 @@
 
 import SwiftUI
 
-let appThemeColor: Color = Color(red: 255/255.0, green: 64/255.0, blue: 0/255.0)
+let appThemeColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
