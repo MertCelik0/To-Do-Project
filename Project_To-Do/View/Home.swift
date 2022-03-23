@@ -232,7 +232,7 @@ struct Home: View {
     
         VStack(spacing: 10) {
             HStack() {
-                VStack(alignment: .leading, spacing: 30) {
+                VStack(alignment: .leading, spacing: 10) {
                     
                     HStack {
                         HStack {
@@ -246,7 +246,7 @@ struct Home: View {
                             }
                         }
                         .hLeading()
-                        HStack {
+                        HStack(spacing: 20) {
                             Button {
                                                    
                             } label: {
