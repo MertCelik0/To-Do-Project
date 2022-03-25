@@ -18,7 +18,10 @@ struct NewTask: View {
     @State var selectStartTime: Date = Date()
     @State var selectEndTime: Date = Date()
     @State var taskColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
-    
+    @State var taskTimeRange: Int = 0
+    @State var hoursSelectedIndex: Int = 0
+    @State var beforeSelectedHour: Int = 0
+
     //MARK: CoreData Context
     @Environment(\.managedObjectContext) var context
     
@@ -142,10 +145,7 @@ struct NewTask: View {
                                                     .font(.title3)
                                                     .bold()
                                                 Spacer()
-                                                DatePicker("",
-                                                    selection: $selectStartTime,
-                                                    displayedComponents: .hourAndMinute
-                                                 ).colorInvert().colorMultiply(taskColor)
+                                                DatePicker("", selection: $selectStartTime, displayedComponents: .hourAndMinute ).colorInvert().colorMultiply(taskColor)
                                                     .labelsHidden()
                                                     .environment(\.locale, Locale.init(identifier: "en_GB"))
                                             }
@@ -155,15 +155,11 @@ struct NewTask: View {
                                                     .font(.title3)
                                                     .bold()
                                                 Spacer()
-                                                DatePicker("",
-                                                           selection: $selectEndTime, in: selectStartTime...,
-                                                   displayedComponents: .hourAndMinute
-                                                ).colorInvert().colorMultiply(taskColor)
+                                                DatePicker("", selection: $selectEndTime, in: selectStartTime..., displayedComponents: .hourAndMinute).colorInvert().colorMultiply(taskColor)
                                                    .labelsHidden()
                                                    .environment(\.locale, Locale.init(identifier: "en_GB"))
 
                                             }
-                                            
                                         }
                                         .padding([.leading, .trailing], 20)
                                       
@@ -179,9 +175,31 @@ struct NewTask: View {
                                     }
                                     
                                 }
+                                
+                                VStack {
+                                    Section {
+                                        VStack {
+                                            SegmentView(taskTimeRange: $taskTimeRange, selectedIndex: $hoursSelectedIndex, options: [1, 15, 30, 45, 60, 90], color: taskColor)
+                                            .onChange(of: taskTimeRange) { _ in
+                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: -beforeSelectedHour, to: selectEndTime) ?? selectEndTime
+                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: taskTimeRange, to: selectEndTime) ?? selectEndTime
+                                                beforeSelectedHour = taskTimeRange
+                                            }
+                                        }
+                                    } header: {
+                                        HStack {
+                                            Text("How long?")
+                                                .foregroundColor(.secondary)
+                                                .font(.title2)
+                                                .bold()
+                                            
+                                            Spacer()
+                                        }
+                                    }
+                                }
                               
                                 VStack {
-                                    Section() {
+                                    Section {
                                         ColorView(selectionColor: $taskColor)
                                     } header: {
                                         HStack {

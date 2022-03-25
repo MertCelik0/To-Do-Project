@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E12408F827EE48AE00B77A34 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12408F727EE48AE00B77A34 /* ColorView.swift */; };
+		E12A013627EE663800CEC8AE /* SegmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12A013527EE663800CEC8AE /* SegmentView.swift */; };
 		E12A490127E263F60037015A /* Project_To_DoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12A490027E263F60037015A /* Project_To_DoApp.swift */; };
 		E12A490327E263F60037015A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12A490227E263F60037015A /* ContentView.swift */; };
 		E12A490527E263F80037015A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E12A490427E263F80037015A /* Assets.xcassets */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		E12408F727EE48AE00B77A34 /* ColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
+		E12A013527EE663800CEC8AE /* SegmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentView.swift; sourceTree = "<group>"; };
 		E12A48FD27E263F60037015A /* Project_To-Do.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Project_To-Do.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E12A490027E263F60037015A /* Project_To_DoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project_To_DoApp.swift; sourceTree = "<group>"; };
 		E12A490227E263F60037015A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				E1E4017927E61902006499AB /* DynamicFilteredView.swift */,
 				E1E4017B27E624A6006499AB /* NewTask.swift */,
 				E12408F727EE48AE00B77A34 /* ColorView.swift */,
+				E12A013527EE663800CEC8AE /* SegmentView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -300,6 +303,7 @@
 				E1E4017E27EA2B60006499AB /* Extension.swift in Sources */,
 				E12A490A27E263F80037015A /* Persistence.swift in Sources */,
 				E1E4017A27E61902006499AB /* DynamicFilteredView.swift in Sources */,
+				E12A013627EE663800CEC8AE /* SegmentView.swift in Sources */,
 				E1E4017827E60B88006499AB /* TaskViewModel.swift in Sources */,
 				E12408F827EE48AE00B77A34 /* ColorView.swift in Sources */,
 				E12A490D27E263F80037015A /* Project_To_Do.xcdatamodeld in Sources */,
