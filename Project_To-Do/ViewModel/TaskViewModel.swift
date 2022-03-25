@@ -45,12 +45,26 @@ class TaskViewModel: ObservableObject {
             }
         }
     }
-    
-    
     // Extracting Date
     func extractDate(date: Date, format: String) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = format
+        return formatter.string(from: date)
+    }
+    
+    func setStringtoDate(date: String) -> Date{
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: date) ?? Date()
+    }
+
+    func setDatetoString(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        formatter.dateFormat = "yyyy-MM-dd"
         return formatter.string(from: date)
     }
     
@@ -93,6 +107,21 @@ class TaskViewModel: ObservableObject {
         
         return extractDate(date: date ?? Date(), format: "HH:mm")
     }
+    func getHours(hour: Int) -> String {
+        var components = DateComponents()
+        components.hour = hour
+        let date = Calendar.current.date(from: components)
+        
+        return extractDate(date: date ?? Date(), format: "HH")
+    }
+    
+    func getMinutes(min: Int) -> String {
+        var components = DateComponents()
+        components.minute = min
+        let date = Calendar.current.date(from: components)
+        
+        return extractDate(date: date ?? Date(), format: "mm")
+    }
     
     func getMinuteForData(selectedMin: Int) -> Int {
         var minData: Int = 0
@@ -116,12 +145,13 @@ class TaskViewModel: ObservableObject {
         return multiplyData
     }
     
+    
     // Get task height
 //    func getTaskHeight(taskHour: Int) -> CGFloat {
 //        var value: Float = 0
-//      
+//
 //        let Hour = Int(taskHour)!
-//        
+//
 //        if Hour == 0 {
 //            if Minute >= 0 && Minute >= 15 {
 //                value = 0.10
@@ -147,7 +177,7 @@ class TaskViewModel: ObservableObject {
 //        else{
 //            value = 2
 //        }
-//        
+//
 //        return CGFloat(65 * (1.0 + value))
 //    }
 }

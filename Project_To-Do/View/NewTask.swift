@@ -15,11 +15,10 @@ struct NewTask: View {
     //MARK: Task Values
     @State var taskTitle: String = ""
     @State var taskDate: Date = Date()
-    @State var selectedTime: Int = 0
-    @State var date = Date()
+    @State var selectStartTime: Date = Date()
+    @State var selectEndTime: Date = Date()
+    @State var taskColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
     
-    @State var selectedMinute: Int = 14
-
     //MARK: CoreData Context
     @Environment(\.managedObjectContext) var context
     
@@ -31,30 +30,144 @@ struct NewTask: View {
                 Color(.white)
                     
                 VStack {
-                   
                     Section {
                         ScrollView {
                             VStack(spacing: 40) {
                                 
-                                Section {
-                                    HStack(spacing: 10) {
-                                        Rectangle()
-                                            .frame(width: 40, height: 40)
-                                        
-                                        TextField("Go to work", text: $taskTitle) {
-                                            UIApplication.shared.endEditing()
-                                        }
-                                        .font(.system(size: 24).bold())
-                                        .onAppear {
-                                            if let task = taskModel.editTask {
-                                                taskTitle = task.taskTitle ?? ""
+                                VStack {
+                                    Section {
+                                        HStack(spacing: 10) {
+                                            Rectangle()
+                                                .fill(.gray)
+                                                .frame(width: 40, height: 40)
+                                                .cornerRadius(10)
+                                                .background(
+                                                   RoundedRectangle(cornerRadius: 10)
+                                                      .stroke(taskColor, lineWidth: 6)
+                                                )
+                                            
+                                            TextField("Go to work", text: $taskTitle) {
+                                                UIApplication.shared.endEditing()
+                                            }
+                                            .font(.system(size: 24).bold())
+                                            .onAppear {
+                                                if let task = taskModel.editTask {
+                                                    taskTitle = task.taskTitle ?? ""
+                                                }
                                             }
                                         }
+                                        .padding([.leading, .trailing], 20)
+                                    } header: {
+                                        HStack {
+                                            Text("What?")
+                                                .foregroundColor(.secondary)
+                                                .font(.title2)
+                                                .bold()
+                                            Spacer()
+                                        }
                                     }
+                                    
                                 }
+                              
+                              
                                 
-                                if taskModel.editTask == nil {
-                                    VStack(spacing: 10) {
+//                                if taskModel.editTask == nil {
+//                                    VStack(spacing: 10) {
+//                                        HStack {
+//                                            Text("When?")
+//                                                .foregroundColor(.secondary)
+//                                                .font(.title2)
+//                                                .bold()
+//
+//                                            Spacer()
+//                                        }
+//                                        LazyVStack {
+//
+//                                            HStack(spacing: 0) {
+//                                                ZStack {
+//                                                    RoundedRectangle(cornerRadius: 5)
+//                                                        .frame(width: UIScreen.main.bounds.width/1.4, height: 32)
+//                                                        .foregroundColor(appThemeColor)
+//
+//                                                    Picker("", selection: $selectedTime) {
+//                                                        ForEach((0...23), id: \.self) { hour in
+//                                                            ForEach((0...taskModel.getMinuteForData(selectedMin: selectedMinute)), id: \.self) { min in
+//                                                                if selectedMinute != 1 {
+//
+//                                                                    Text("\(taskModel.getHoursAndMinutes(hour: hour, min: min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute))) - \(taskModel.getHoursAndMinutes(hour: hour, min: (min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute)) + selectedMinute))")
+//
+//                                                                }
+//                                                                else {
+//                                                                    Text(taskModel.getHoursAndMinutes(hour: hour, min: min * 5))
+//                                                                }
+//
+//                                                            }
+//                                                         }
+//                                                    }
+//                                                    .pickerStyle(.wheel)
+//                                                    .frame(width: UIScreen.main.bounds.width/1.4)
+//
+//                                                }
+//                                            }
+//
+//                                        }
+//
+//
+//                                    }
+//                                }
+                                VStack {
+                                    Section {
+                                        VStack {
+                                            
+                                            HStack {
+                                                Text("Date")
+                                                    .font(.title3)
+                                                    .bold()
+                                                Spacer()
+                                                DatePicker("",
+                                                    selection: $taskDate,
+                                                    displayedComponents: .date
+                                                 ).colorInvert().colorMultiply(taskColor)
+                                                    .labelsHidden()
+                                                    .environment(\.locale, Locale.init(identifier: "en_GB"))
+
+                                            }
+                                            .onChange(of: taskDate) { newValue in
+                                                selectStartTime = taskDate
+                                                selectEndTime = taskDate
+                                            }
+                                            
+                                            HStack {
+                                                Text("Start Time")
+                                                    .font(.title3)
+                                                    .bold()
+                                                Spacer()
+                                                DatePicker("",
+                                                    selection: $selectStartTime,
+                                                    displayedComponents: .hourAndMinute
+                                                 ).colorInvert().colorMultiply(taskColor)
+                                                    .labelsHidden()
+                                                    .environment(\.locale, Locale.init(identifier: "en_GB"))
+                                            }
+                                          
+                                            HStack {
+                                                Text("End Time")
+                                                    .font(.title3)
+                                                    .bold()
+                                                Spacer()
+                                                DatePicker("",
+                                                           selection: $selectEndTime, in: selectStartTime...,
+                                                   displayedComponents: .hourAndMinute
+                                                ).colorInvert().colorMultiply(taskColor)
+                                                   .labelsHidden()
+                                                   .environment(\.locale, Locale.init(identifier: "en_GB"))
+
+                                            }
+                                            
+                                        }
+                                        .padding([.leading, .trailing], 20)
+                                      
+                                    } header: {
                                         HStack {
                                             Text("When?")
                                                 .foregroundColor(.secondary)
@@ -63,82 +176,61 @@ struct NewTask: View {
                                             
                                             Spacer()
                                         }
-                                        LazyVStack {
-                                          
-                                            HStack(spacing: 0) {
-                                                ZStack {
-                                                    RoundedRectangle(cornerRadius: 5)
-                                                        .frame(width: UIScreen.main.bounds.width/1.4, height: 32)
-                                                        .foregroundColor(appThemeColor)
-                                                    
-                                                    Picker("", selection: $selectedTime) {
-                                                        ForEach((0...23), id: \.self) { hour in
-                                                            ForEach((0...taskModel.getMinuteForData(selectedMin: selectedMinute)), id: \.self) { min in
-                                                                if selectedMinute != 1 {
-                                                                    
-                                                                    Text(selectedTime == hour ? "\(taskModel.getHoursAndMinutes(hour: hour, min: min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute))) - \(taskModel.getHoursAndMinutes(hour: hour, min: (min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute)) + selectedMinute))" : "\(taskModel.getHoursAndMinutes(hour: hour, min: min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute)))")
-                                                                        .onAppear(perform: {
-                                                                            print(selectedTime)
-                                                                        })
-                                                            
-                                                                }
-                                                                else {
-                                                                    Text(taskModel.getHoursAndMinutes(hour: hour, min: min * 5))
-                                                                }
-                                                                
-                                                            }
-                                                         }
-                                                    }
-                                                    
-                                                    .pickerStyle(.wheel)
-                                                    .frame(width: UIScreen.main.bounds.width/1.4)
-                                                }
-                                            }
-
+                                    }
+                                    
+                                }
+                              
+                                VStack {
+                                    Section() {
+                                        ColorView(selectionColor: $taskColor)
+                                    } header: {
+                                        HStack {
+                                            Text("What color?")
+                                                .foregroundColor(.secondary)
+                                                .font(.title2)
+                                                .bold()
+                                            
+                                            Spacer()
                                         }
-
                                     }
-                                }
                                 
-                                VStack(spacing: 10) {
-                                    HStack {
-                                        Text("How much will it take?")
-                                            .foregroundColor(.secondary)
-                                            .font(.title2)
-                                            .bold()
-                                        
-                                        Spacer()
-                                    }
-                                }
-                                
-                                VStack(spacing: 10) {
-                                    HStack {
-                                        Text("What color?")
-                                            .foregroundColor(.secondary)
-                                            .font(.title2)
-                                            .bold()
-                                        
-                                        Spacer()
-                                    }
                                 }
 
-                                
                                 Spacer()
                             }
                             .padding()
                         }
                     } footer: {
                         Button {
-                            
+                            if let task = taskModel.editTask {
+                                task.taskTitle = taskTitle
+                            }
+                            else {
+                                let task = Task(context: context)
+                                task.taskTitle = taskTitle
+                                task.taskDate = taskModel.setStringtoDate(date: taskModel.setDatetoString(date: taskDate))
+                                task.taskStartTime = selectStartTime
+                                task.taskEndTime = selectEndTime
+                                task.taskColor_R = Float(taskColor.components.red)
+                                task.taskColor_G = Float(taskColor.components.green)
+                                task.taskColor_B = Float(taskColor.components.blue)
+                                task.taskColor_A = Float(taskColor.components.opacity)
+                            }
+
+                            // Save
+                            try? context.save()
+                            // Dissmissing View
+                            presentationMode.wrappedValue.dismiss()
                         } label: {
                             Text("Create Task")
                                 .foregroundColor(.white)
                                 .font(.system(size: 15))
                                 .frame(width: UIScreen.main.bounds.width/1.3, height: 50)
-                                .background(appThemeColor)
+                                .background(taskColor)
                                 .cornerRadius(10)
                                 .padding()
                         }
+                        .disabled(taskTitle == "")
                     }
                     
                 }
@@ -177,15 +269,15 @@ struct NewTask: View {
 
     }
 }
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
 
 struct NewTask_Previews: PreviewProvider {
     static var previews: some View {
         NewTask()
-    }
-}
-
-extension UIApplication {
-    func endEditing() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

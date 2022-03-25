@@ -28,7 +28,7 @@ struct DynamicFilteredView<Content: View>: View {
         let predicate = NSPredicate(format: "\(filterKey) >= %@ AND \(filterKey) < %@", argumentArray: [today,tommorow])
         
         let request = NSFetchRequest<Task>(entityName: entityName)
-        request.sortDescriptors = [.init(keyPath: \Task.taskDate, ascending: true)]
+        request.sortDescriptors = [.init(keyPath: \Task.taskStartTime, ascending: true)]
         request.predicate = predicate
 
         self.init(fetchRequest: request, content: content)
@@ -84,7 +84,7 @@ struct DynamicFilteredCountView<Content: View>: View {
         let predicate = NSPredicate(format: "\(filterKey) >= %@ AND \(filterKey) < %@", argumentArray: [today,tommorow])
         
         let request = NSFetchRequest<Task>(entityName: entityName)
-        request.sortDescriptors = [.init(keyPath: \Task.taskDate, ascending: true)]
+        request.sortDescriptors = [.init(keyPath: \Task.taskStartTime, ascending: true)]
         request.predicate = predicate
 
         self.init(fetchRequest: request, content: content)

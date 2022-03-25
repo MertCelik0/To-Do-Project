@@ -29,7 +29,7 @@ struct Home: View {
                     Section {
                         ScrollView(showsIndicators: false) {
                             VStack{
-                                TaskView(taskColor: Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+                                TaskView()
                             }
                             .padding(.bottom, 150)
                         }
@@ -108,13 +108,13 @@ struct Home: View {
 
     }
     // TaskView
-    func TaskView(taskColor: Color) -> some View {
+    func TaskView() -> some View {
         
         LazyVStack {
             // Converting object as task model
             DynamicFilteredView(dateToFilter: taskModel.selectedDay) { (object: Task) in
                 
-                TaskCardView(task: object, taskColor: taskColor)
+                TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
                     .hLeading()
 //                if fetchCount == 1 {
 //
@@ -184,7 +184,7 @@ struct Home: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(taskModel.extractDate(date: task.taskDate ?? Date(), format: "HH:ss"))
+                    Text(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm") == taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm") ? "\(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm"))" : "\(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm"))-\(taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm"))")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.secondary)
                             
@@ -215,7 +215,7 @@ struct Home: View {
                                 .background(
                                     ZStack {
                                         Circle()
-                                            .fill(taskColor)
+                                            .fill(Color(red: CGFloat(task.taskColor_R), green: CGFloat(task.taskColor_G), blue: CGFloat(task.taskColor_B), opacity: CGFloat(task.taskColor_A)))
                                             .frame(width: 24, height: 24)
                                         Image(systemName: "checkmark")
                                             .resizable()
@@ -246,7 +246,7 @@ struct Home: View {
                                 .bold()
                             
                             Text(taskModel.extractDate(date: taskModel.selectedDay, format: "yyyy"))
-                                .foregroundColor(.black)
+                                .foregroundColor(appThemeColor)
                                 .font(.title)
                                 .bold()
                                 
@@ -344,7 +344,7 @@ struct Home: View {
                                                 VStack {
                                                     if taskModel.isSelectedDate(date: day) {
                                                         Capsule()
-                                                            .fill(appThemeColor)
+                                                            .fill(taskModel.isToday(date: day) ? appThemeColor : .black)
                                                             .frame(width: 30, height: 30)
                                                             .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
                                                     }
@@ -353,7 +353,7 @@ struct Home: View {
                                                 DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
                                                     ZStack {
                                                         Circle()
-                                                            .fill(Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
+                                                            .fill(Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
                                                             .opacity(object.isCompleted ? 0.5 : 1)
                                                             .frame(width: 15, height: 15)
                                                             .background(
