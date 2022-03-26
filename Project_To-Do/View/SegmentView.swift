@@ -22,7 +22,7 @@ struct SegmentView: View {
                         .fill(color.opacity(0.2))
                     Rectangle()
                         .fill(color)
-                        .cornerRadius(5)
+                        .cornerRadius(10)
                         .padding(4)
                         .opacity(selectedIndex == index ? 1 : 0.01)
                         .onTapGesture {
@@ -35,12 +35,13 @@ struct SegmentView: View {
                 }
                 .overlay(
                     Text(selectedIndex == index ? (getIntToStringValue(Value: options[index]).suffix(2) != "hr" ? getIntToStringValue(Value: options[index])+"m" : getIntToStringValue(Value: options[index])) : getIntToStringValue(Value: options[index]))
-                        .foregroundColor(selectedIndex == index ? .white : .black)
+                        .foregroundColor(selectedIndex == index ? .white : .secondary)
+                        .font(selectedIndex == index ? .system(size: 18).bold() : .system(size: 18))
                 )
             }
         }
-        .frame(height: 40)
-        .cornerRadius(5)
+        .frame(height: 50)
+        .cornerRadius(10)
     }
     
     func getIntToStringValue(Value: Int) -> String {

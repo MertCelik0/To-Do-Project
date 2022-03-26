@@ -11,8 +11,6 @@ class TaskViewModel: ObservableObject {
     
     // Current Week Days
     @Published var Week: [Date] = []
-    // Selected Day
-    @Published var selectedDay: Date = Date()
     // Current Day
     @Published var currentDay: Date = Date()
     // New Task View
@@ -21,8 +19,6 @@ class TaskViewModel: ObservableObject {
     @Published var editTask: Task?
     // Select Week
     @Published var weekCounter: Int = 0
-
-   
     
     // Intializing
     init() {
@@ -69,9 +65,9 @@ class TaskViewModel: ObservableObject {
     }
     
     // Checking if the selected date
-    func isSelectedDate(date: Date) -> Bool {
+    func isSelectedDate(date: Date, selectDay: Date) -> Bool {
         let calendar = Calendar.current
-        return calendar.isDate(selectedDay, inSameDayAs: date)
+        return calendar.isDate(selectDay, inSameDayAs: date)
     }
     
     // Checking if the current Date is Today
@@ -147,38 +143,16 @@ class TaskViewModel: ObservableObject {
     
     
     // Get task height
-//    func getTaskHeight(taskHour: Int) -> CGFloat {
-//        var value: Float = 0
-//
-//        let Hour = Int(taskHour)!
-//
-//        if Hour == 0 {
-//            if Minute >= 0 && Minute >= 15 {
-//                value = 0.10
-//            }
-//            else if Minute >= 16 && Minute >= 30 {
-//                value = 0.25
-//            }
-//            else if Minute >= 31 && Minute >= 45 {
-//                value = 0.40
-//            }
-//            else if Minute >= 46 && Minute >= 60 {
-//                value = 0.55
-//            }
-//        }
-//        else if Hour == 1 {
-//            if Minute >= 0 && Minute >= 30 {
-//                value = 1.15
-//           }
-//            else if Minute >= 31 && Minute >= 60 {
-//                value = 1.45
-//           }
-//        }
-//        else{
-//            value = 2
-//        }
-//
-//        return CGFloat(65 * (1.0 + value))
-//    }
+    func getTaskHeight(taskTimeRange: Int) -> CGFloat {
+        var taskTime = taskTimeRange
+        var value: Float = 0
+
+        if taskTime >= 200 {
+            taskTime = 200
+        }
+        
+        value = Float(taskTime) / 100
+        return CGFloat(65 * (1+value))
+    }
 }
 

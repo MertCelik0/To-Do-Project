@@ -100,7 +100,7 @@ struct DynamicFilteredCountView<Content: View>: View {
             if fetchRequest.wrappedValue.isEmpty {
             }
             else {
-                HStack(spacing: -5) {
+                HStack(spacing: -6) {
                     // fetchRequest.wrappedValue[0...2] max 3 value
                     if fetchRequest.wrappedValue.count >= 4 {
                         ForEach(fetchRequest.wrappedValue[0...3] , id: \.objectID) { object in

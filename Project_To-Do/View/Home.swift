@@ -9,8 +9,7 @@ import SwiftUI
 
 struct Home: View {
     
-    @StateObject var taskModel: TaskViewModel = TaskViewModel()
-    @Namespace var animation
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
 
     // Coredate Context
     @Environment(\.managedObjectContext) var context
@@ -19,27 +18,37 @@ struct Home: View {
     @Environment(\.editMode) var editMode
 
     @State var cardShow = false
-    
-    @State var selectedDate: Date = Date()
+        
+    // Selected Day
+    @State var selectedDay: Date = Date()
     
     var body: some View {
         NavigationView {
             ZStack {
+                appThemeColor
+                    .opacity(0.30)
+                    .edgesIgnoringSafeArea(.top)
+                
                 VStack(spacing: 0) {
                     Section {
-                        ScrollView(showsIndicators: false) {
-                            VStack{
-                                TaskView()
+                        ZStack {
+                            Color(.white)
+                                .cornerRadius(30, corners: [.topLeft, .topRight])
+                                .shadow(radius: 2)
+                                .edgesIgnoringSafeArea(.bottom)
+                            
+                            ScrollView(showsIndicators: false) {
+                                VStack{
+                                    TaskView(selectedDay: $selectedDay)
+                                        .environmentObject(taskModel)
+                                }
+                                .padding(.bottom, 150)
                             }
-                            .padding(.bottom, 150)
                         }
+                   
                     } header: {
-                        HeaderView()
-                            .background(
-                                Color(.systemGray6)
-                                    .shadow(radius: 2)
-                                    .edgesIgnoringSafeArea(.top)
-                            )
+                        Header(cardShow: $cardShow, selectedDay: $selectedDay)
+                            .environmentObject(taskModel)
                     }
                     .edgesIgnoringSafeArea(.bottom)
 
@@ -71,7 +80,8 @@ struct Home: View {
                         .environmentObject(taskModel)
                 }
                 
-                CardContent()
+                BottomCard(cardShow: $cardShow, selectedDay: $selectedDay)
+                    .environmentObject(taskModel)
                     .animation(.default)
             }
            
@@ -107,15 +117,21 @@ struct Home: View {
 //            )
 
     }
-    // TaskView
-    func TaskView() -> some View {
-        
+}
+
+struct TaskView: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Binding var selectedDay: Date
+
+    var body: some View {
         LazyVStack {
             // Converting object as task model
-            DynamicFilteredView(dateToFilter: taskModel.selectedDay) { (object: Task) in
+            DynamicFilteredView(dateToFilter: selectedDay) { (object: Task) in
                 
                 TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
+                    .environmentObject(taskModel)
                     .hLeading()
+                
 //                if fetchCount == 1 {
 //
 //
@@ -132,11 +148,20 @@ struct Home: View {
             }
             
         }
+
     }
+}
+
+
+struct TaskCardView: View {
+    //MARK: CoreData Context
+    @Environment(\.managedObjectContext) var context
     
-    // Task Card View
-    func TaskCardView(task: Task, taskColor: Color) -> some View {
-        
+    var task: Task
+    var taskColor: Color
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+
+    var body: some View {
         HStack(alignment: .top, spacing: 10) {
             
 //           if editMode?.wrappedValue == .active {
@@ -175,21 +200,31 @@ struct Home: View {
             
          
             HStack {
-                
-                VStack(alignment: .center) {
+                let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
+                ZStack {
                     Capsule()
                         .fill(taskColor)
-                        .frame(width: 65, height: 65)
+                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
+                    
+                    Capsule()
+                        .strokeBorder(.white, lineWidth: 3)
+                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
                         .shadow(radius: 5)
+
                 }
-                
+              
+                    
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm") == taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm") ? "\(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm"))" : "\(taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm"))-\(taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm"))")
+                    let taskStartTime = taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm")
+                    let taskEndTime = taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm")
+                    let taskTimeRange = task.taskEndTime?.range(from: task.taskStartTime ?? Date()) ?? ""
+                    
+                    Text(taskStartTime == taskEndTime ? "\(taskStartTime)" : "\(taskStartTime)-\(taskEndTime) \("(\(taskTimeRange))")")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.secondary)
                             
                     Text(task.taskTitle ?? "")
-                        .font(.body.bold())
+                        .font(.title2.bold())
                         .foregroundColor(task.isCompleted ? .secondary : .black)
                         .strikethrough(task.isCompleted ? true : false, color: task.isCompleted ? .secondary : .black)
                 }
@@ -231,178 +266,205 @@ struct Home: View {
         }
         .padding()
     }
-    
-    // HeaderView
-    func HeaderView() -> some View {
-        
-        VStack(spacing: 20) {
+}
+
+struct Header: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Binding var cardShow: Bool
+    @Binding var selectedDay: Date
+
+    var body: some View {
+        VStack(spacing: 0) {
             HStack() {
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        HStack {
-                            Text(taskModel.extractDate(date: taskModel.selectedDay, format: "MMMM"))
-                                .foregroundColor(.black)
-                                .font(.title)
-                                .bold()
-                            
-                            Text(taskModel.extractDate(date: taskModel.selectedDay, format: "yyyy"))
-                                .foregroundColor(appThemeColor)
-                                .font(.title)
-                                .bold()
-                                
-                        }
-                        .hLeading()
-                        HStack(spacing: 20) {
-                            Button {
-                                                   
-                            } label: {
-                                Image(systemName: "bolt.shield")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(appThemeColor)
-                            }
-                            
-                            
-                            Button {
-                                cardShow.toggle()
-                            } label: {
-                                Image(systemName: "calendar")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(appThemeColor)
-                            }
-                            
-                            
-                            Button {
-                                                   
-                            } label: {
-                                Image(systemName: "gearshape")
-                                    .resizable()
-                                    .frame(width: 25, height: 25)
-                                    .clipShape(Circle())
-                                    .foregroundColor(appThemeColor)
-
-                            }
-                            
-                            Button {
-                                                   
-                            } label: {
-                                Image("ProfilePhoto")
-                                    .resizable()
-                                    .frame(width: 45, height: 45)
-                                    .clipShape(Circle())
-                                    .overlay(Circle()
-                                               .stroke(appThemeColor, lineWidth: 3))
-                                    .shadow(radius: 10)
-                            }
-                        }
-                        .hTrailing()
-                        
-                    }
-                    
-
-                    
-                }
-                .hLeading()
-                
-  
+               HeaderTop(cardShow: $cardShow, selectedDay: $selectedDay)
+                    .environmentObject(taskModel)
             }
-            
-            HStack {
-                Button {
-                    withAnimation {
-                        taskModel.weekCounter -= 1
-                        taskModel.fetchCurrentWeek()
-                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: taskModel.selectedDay)!
-                    }
-                    
-                } label: {
-                    Image(systemName: "arrowtriangle.left.fill")
-                        .foregroundColor(.black)
-                }
-                
-                ScrollView(.horizontal, showsIndicators: false) {
-       
-                    HStack(alignment: .center, spacing: 4) {
-                        ForEach(taskModel.Week, id: \.self) { day in
-                            
-                            VStack(spacing: 10) {
-                                
-                                Text(taskModel.extractDate(date: day, format: "EEE"))
-                                    .font(.system(size: 15))
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(Color.secondary)
-                                
-                                
-                                Text(taskModel.extractDate(date: day, format: "dd"))
-                                    .font(.system(size: 15))
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(taskModel.isSelectedDate(date: day) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
-                                    .background(
-                                        VStack {
-                                            ZStack {
-                                                VStack {
-                                                    if taskModel.isSelectedDate(date: day) {
-                                                        Capsule()
-                                                            .fill(taskModel.isToday(date: day) ? appThemeColor : .black)
-                                                            .frame(width: 30, height: 30)
-                                                            .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
-                                                    }
-                                                }
-                                                    
-                                                DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
-                                                    ZStack {
-                                                        Circle()
-                                                            .fill(Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
-                                                            .opacity(object.isCompleted ? 0.5 : 1)
-                                                            .frame(width: 15, height: 15)
-                                                            .background(
-                                                                Circle()
-                                                                    .strokeBorder(.white, lineWidth: 5)
-                                                                    .frame(width: 15, height: 15)
-                                                            )
-                                                        Text(object.taskTitle?.prefix(1) ?? "")
-                                                            .foregroundColor(.white)
-                                                            .font(.system(size: 10))
-                                                        
-                                                    }
-                                                   
-                                                    }
-                                                .offset(y: 25)
-                                            }
-                                        }
-                                    )
-                            }
-                            .padding(.bottom)
-                            .frame(width: 45, height: 90)
-                            .onTapGesture {
-                                withAnimation {
-                                    taskModel.selectedDay = day
-                                }
-                            }
-                        }
-                    }
-                    
-                }
-                
-                Button {
-                    withAnimation {
-                        taskModel.weekCounter += 1
-                        taskModel.fetchCurrentWeek()
-                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: taskModel.selectedDay)!
-                    }
-                } label: {
-                    Image(systemName: "arrowtriangle.right.fill")
-                        .foregroundColor(.black)
-                }
+            .padding()
+
+            HStack() {
+                HeaderWeeks(selectedDay: $selectedDay)
+                    .environmentObject(taskModel)
             }
             
         }
-        .padding()
- 
+        .padding(.bottom)
     }
-    
-    func CardContent() -> some View {
+}
+
+struct HeaderTop: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Binding var cardShow: Bool
+    @Binding var selectedDay: Date
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                HStack {
+                    Text(taskModel.extractDate(date: selectedDay, format: "MMMM"))
+                        .foregroundColor(.black)
+                        .font(.title)
+                        .bold()
+                    
+                    Text(taskModel.extractDate(date: selectedDay, format: "yyyy"))
+                        .foregroundColor(.black)
+                        .font(.title)
+                        .bold()
+                        
+                }
+                .hLeading()
+                HStack(spacing: 20) {
+                    Button {
+                                           
+                    } label: {
+                        Image(systemName: "bolt.shield")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.black)
+                    }
+                    
+                    
+                    Button {
+                        cardShow.toggle()
+                    } label: {
+                        Image(systemName: "calendar")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(.black)
+                    }
+                    
+                    
+                    Button {
+                                           
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .clipShape(Circle())
+                            .foregroundColor(.black)
+
+                    }
+                    
+                    Button {
+                                           
+                    } label: {
+                        Image("ProfilePhoto")
+                            .resizable()
+                            .frame(width: 45, height: 45)
+                            .clipShape(Circle())
+                            .overlay(Circle()
+                                        .stroke(.white, lineWidth: 2))
+                            .shadow(radius: 10)
+                    }
+                }
+                .hTrailing()
+                
+            }
+        }
+        .hLeading()
+    }
+}
+
+struct HeaderWeeks: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Namespace var animation
+    @Binding var selectedDay: Date
+
+    var body: some View {
+        //                Button {
+        //                    withAnimation {
+        //                        taskModel.weekCounter -= 1
+        //                        taskModel.fetchCurrentWeek()
+        //                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: taskModel.selectedDay)!
+        //                    }
+        //
+        //                } label: {
+        //                    Image(systemName: "arrowtriangle.left.fill")
+        //                        .foregroundColor(.black)
+        //                }
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(alignment: .center, spacing: 5) {
+                                ForEach(taskModel.Week, id: \.self) { day in
+                                    ZStack {
+                                        Capsule()
+                                            .fill(.white)
+                                            .frame(width: 47, height: 90)
+                                        
+                                        if taskModel.isSelectedDate(date: day, selectDay: selectedDay) {
+                                            Capsule()
+                                                .fill(taskModel.isToday(date: day) ? appThemeColor : .black)
+                                                .frame(width: 42, height: 85)
+                                                .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
+                                        }
+                                        
+                                        VStack(spacing: 6) {
+                                            
+                                            Text(taskModel.extractDate(date: day, format: "EEE"))
+                                                .font(.system(size: 15))
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
+
+                                            
+                                            Text(taskModel.extractDate(date: day, format: "dd"))
+                                                .font(.system(size: 15))
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
+                                       
+                                        }
+                                    
+                                        DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
+                                                    .opacity(object.isCompleted ? 0.5 : 1)
+                                                    .frame(width: 13, height: 13)
+                                                    .background(
+                                                        Circle()
+                                                            .strokeBorder(.white, lineWidth: 7)
+                                                            .frame(width: 13, height: 13)
+                                                    )
+                                                Text(object.taskTitle?.prefix(1) ?? "")
+                                                    .foregroundColor(.white)
+                                                    .font(.system(size: 10))
+                                                
+                                            }
+                                           
+                                            }
+                                        .offset(y: 29)
+                                    }
+                                    .onTapGesture {
+                                        withAnimation {
+                                            selectedDay = day
+                                        }
+                                    }
+                                }
+                            }
+                            .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
+
+                        }
+                        .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
+
+        //                Button {
+        //                    withAnimation {
+        //                        taskModel.weekCounter += 1
+        //                        taskModel.fetchCurrentWeek()
+        //                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: taskModel.selectedDay)!
+        //                    }
+        //                } label: {
+        //                    Image(systemName: "arrowtriangle.right.fill")
+        //                        .foregroundColor(.black)
+        //                }
+    }
+}
+
+
+
+struct BottomCard: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Binding var cardShow: Bool
+    @Binding var selectedDay: Date
+
+    var body: some View {
         ZStack {
             // background
             GeometryReader { _ in
@@ -420,7 +482,7 @@ struct Home: View {
                 Spacer()
                 VStack {
                     VStack(spacing: 5) {
-                        DatePicker("", selection: $selectedDate, displayedComponents: .date)
+                        DatePicker("", selection: $selectedDay, displayedComponents: .date)
                             .datePickerStyle(.graphical)
                         
                         Button {
@@ -450,54 +512,11 @@ struct Home: View {
         }
         .edgesIgnoringSafeArea(.all)
     }
-
 }
-
 
 
 struct Home_Previews: PreviewProvider {
     static var previews: some View {
         Home()
-    }
-}
-
-//MARK: UI Design helper functions
-extension View {
-    func hLeading() -> some View { self
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
-    func hTrailing() -> some View { self
-        .frame(maxWidth: .infinity, alignment: .trailing)
-    }
-    
-    func hCenter() -> some View { self
-        .frame(maxWidth: .infinity, alignment: .center)
-    }
-    
-    //MARK: Safe Area
-    func getSafeArea() -> UIEdgeInsets {
-        guard let screen = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
-            return .zero
-        }
-        guard let safeArea = screen.windows.first?.safeAreaInsets else {
-            return .zero
-        }
-        
-        return safeArea
-    }
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-            clipShape( RoundedCorner(radius: radius, corners: corners) )
-        }
-}
-
-struct RoundedCorner: Shape {
-    
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-    
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
-        return Path(path.cgPath)
     }
 }

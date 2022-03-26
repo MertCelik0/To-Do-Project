@@ -49,7 +49,7 @@ struct NewTask: View {
                                                       .stroke(taskColor, lineWidth: 6)
                                                 )
                                             
-                                            TextField("Go to work", text: $taskTitle) {
+                                            TextField("Title", text: $taskTitle) {
                                                 UIApplication.shared.endEditing()
                                             }
                                             .font(.system(size: 24).bold())
@@ -138,6 +138,8 @@ struct NewTask: View {
                                             .onChange(of: taskDate) { newValue in
                                                 selectStartTime = taskDate
                                                 selectEndTime = taskDate
+                                                hoursSelectedIndex = 0
+                                                beforeSelectedHour = 0
                                             }
                                             
                                             HStack {

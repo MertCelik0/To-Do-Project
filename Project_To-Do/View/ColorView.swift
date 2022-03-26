@@ -19,9 +19,11 @@ struct ColorView: View {
     ]
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 0) {
             ForEach(swatches, id: \.self){ swatch in
                 ZStack {
+                    Rectangle()
+                        .fill(selectionColor.opacity(0.2))
                     Circle()
                         .fill(swatch)
                         .frame(width: selectionColor == swatch ? 18 : 25, height: selectionColor == swatch ? 18 : 25)
@@ -33,12 +35,19 @@ struct ColorView: View {
                             .stroke(swatch, lineWidth: 3)
                             .frame(width: 25, height: 25)
                     }
-                   
+                    
                 }
             }
-            ColorPicker("", selection: $selectionColor)
-                .frame(width: 25, height: 25)
+            ZStack {
+                Rectangle()
+                    .fill(selectionColor.opacity(0.2))
+                ColorPicker("", selection: $selectionColor)
+                    .padding()
+
+            }
         }
+        .frame(height: 50)
+        .cornerRadius(10)
     }
 }
 
