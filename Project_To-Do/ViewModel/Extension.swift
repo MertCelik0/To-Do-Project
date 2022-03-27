@@ -29,11 +29,27 @@ extension Color {
 }
 
 extension Date {
+    
+    // convert date string
+    func getFormattedDateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd hh:mm a"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.string(from: date)
+    }
+    
+    // convert string date
+    func getStringDate(from date: String) -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd hh:mm a"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.date(from: date) ?? Date()
+    }
 
     /// Returns the amount of hour and  minutes from another date
     func range(from date: Date) -> String {
         let dayHourMinuteSecond: Set<Calendar.Component> = [.hour, .minute]
-        let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: date, to: self)
+        let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: getStringDate(from: getFormattedDateString(from: date)), to: self)
         let minutes = difference.minute == 0 ? "" : "\(difference.minute!)m"
         let hours = difference.hour == 0 ? "" + minutes : "\(difference.hour!)h" + (difference.minute == 0 ? "" : " " + minutes)
         return hours
@@ -41,7 +57,7 @@ extension Date {
     
     func rangeInt(from date: Date) -> Int {
         let dayHourMinuteSecond: Set<Calendar.Component> = [.minute]
-        let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: date, to: self).minute ?? 0
+        let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: getStringDate(from: getFormattedDateString(from: date)), to: self).minute ?? 0
         return difference
     }
 }
