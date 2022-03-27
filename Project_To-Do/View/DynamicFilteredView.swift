@@ -54,7 +54,7 @@ struct DynamicFilteredView<Content: View>: View {
                 }
             }
             else {
-                VStack {
+                VStack(spacing: -20) {
                     ForEach(fetchRequest.wrappedValue, id: \.objectID) { object in
                         self.content(object)
                     }

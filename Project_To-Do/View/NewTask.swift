@@ -30,8 +30,6 @@ struct NewTask: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color(.white)
-                    
                 VStack {
                     Section {
                         ScrollView {
@@ -49,10 +47,7 @@ struct NewTask: View {
                                                       .stroke(taskColor, lineWidth: 6)
                                                 )
                                             
-                                            TextField("Title", text: $taskTitle) {
-                                                UIApplication.shared.endEditing()
-                                            }
-                                            .font(.system(size: 24).bold())
+                                            CustomTextField(placeHolder: "Go to workout!", value: $taskTitle, lineColor: taskColor, width: 2)
                                             .onAppear {
                                                 if let task = taskModel.editTask {
                                                     taskTitle = task.taskTitle ?? ""
@@ -62,7 +57,7 @@ struct NewTask: View {
                                         .padding([.leading, .trailing], 20)
                                     } header: {
                                         HStack {
-                                            Text("What?")
+                                            Text("Task Title")
                                                 .foregroundColor(.secondary)
                                                 .font(.title2)
                                                 .bold()
@@ -167,7 +162,7 @@ struct NewTask: View {
                                       
                                     } header: {
                                         HStack {
-                                            Text("When?")
+                                            Text("Task Date")
                                                 .foregroundColor(.secondary)
                                                 .font(.title2)
                                                 .bold()
@@ -190,7 +185,7 @@ struct NewTask: View {
                                         }
                                     } header: {
                                         HStack {
-                                            Text("How long?")
+                                            Text("Task Time")
                                                 .foregroundColor(.secondary)
                                                 .font(.title2)
                                                 .bold()
@@ -205,7 +200,7 @@ struct NewTask: View {
                                         ColorView(selectionColor: $taskColor)
                                     } header: {
                                         HStack {
-                                            Text("What color?")
+                                            Text("Task Color")
                                                 .foregroundColor(.secondary)
                                                 .font(.title2)
                                                 .bold()
@@ -244,7 +239,7 @@ struct NewTask: View {
                         } label: {
                             Text("Create Task")
                                 .foregroundColor(.white)
-                                .font(.system(size: 15))
+                                .font(.system(size: 25).bold())
                                 .frame(width: UIScreen.main.bounds.width/1.3, height: 50)
                                 .background(taskColor)
                                 .cornerRadius(10)
@@ -254,8 +249,25 @@ struct NewTask: View {
                     }
                     
                 }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
+               
+                }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    HStack {
+                        Text("TASK").font(.title).foregroundColor(taskColor).bold()
+                        Text("CREATE").font(.title).foregroundColor(.black).bold()
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.black)
+                    }
+                }
+//                .toolbar {
 //                    ToolbarItem(placement: .navigationBarTrailing) {
 //                        Button("Save") {
 //                            if let task = taskModel.editTask {
@@ -275,13 +287,9 @@ struct NewTask: View {
 //                        .disabled(taskTitle == "")
 //                    }
                     
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("Cancel") {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                    }
+                   
 
-                }
+ //               }
             }
         
         }
@@ -289,15 +297,5 @@ struct NewTask: View {
 
     }
 }
-extension UIApplication {
-    func endEditing() {
-        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
 
 
-struct NewTask_Previews: PreviewProvider {
-    static var previews: some View {
-        NewTask()
-    }
-}

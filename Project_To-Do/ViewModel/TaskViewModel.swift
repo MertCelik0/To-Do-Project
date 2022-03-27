@@ -35,7 +35,7 @@ class TaskViewModel: ObservableObject {
         let selectedWeek = calendar.dateInterval(of: .weekOfMonth, for: CWeek ?? Date())
         
         Week.removeAll()
-        (1...7).forEach { day in
+        (0...6).forEach { day in
             if let weekday = calendar.date(byAdding: .day, value: day, to: selectedWeek?.start ?? Date()) {
                 Week.append(weekday)
             }
@@ -77,14 +77,29 @@ class TaskViewModel: ObservableObject {
     }
     
     // Checking if the currentHour is task hour
-    func isCurrentHour(date: Date) -> Bool {
+    func isCurrentHour(task: Task) -> Bool {
         let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: date)
-        let currenthour = calendar.component(.hour, from: Date())
         
-        let isToday = calendar.isDateInToday(date)
-        
-        return (hour == currenthour && isToday)
+        let starthour = calendar.component(.hour, from: task.taskStartTime ?? Date())
+        let startmin = calendar.component(.minute, from: task.taskStartTime ?? Date())
+
+        let endhour = calendar.component(.hour, from: task.taskEndTime ?? Date())
+        let endmin = calendar.component(.minute, from: task.taskEndTime ?? Date())
+
+        let startTimeComponent = DateComponents(calendar: calendar, hour: starthour, minute: startmin)
+        let endTimeComponent   = DateComponents(calendar: calendar, hour: endhour, minute: endmin)
+
+        let now = Date()
+        let startTime = calendar.date(byAdding: startTimeComponent, to: task.taskDate ?? Date())!
+        let endTime = calendar.date(byAdding: endTimeComponent, to: task.taskDate ?? Date())!
+
+        print("\(startTime) + \(endTime)")
+
+        if startTime <= now && endTime >= now {
+            return true
+        } else {
+            return false
+        }
     }
     
     // Check is the current time after the task time?

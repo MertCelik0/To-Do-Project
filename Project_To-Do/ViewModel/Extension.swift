@@ -35,7 +35,7 @@ extension Date {
         let dayHourMinuteSecond: Set<Calendar.Component> = [.hour, .minute]
         let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: date, to: self)
         let minutes = difference.minute == 0 ? "" : "\(difference.minute!)m"
-        let hours = difference.hour == 0 ? "" + minutes : "\(difference.hour!)h" + " " + minutes
+        let hours = difference.hour == 0 ? "" + minutes : "\(difference.hour!)h" + (difference.minute == 0 ? "" : " " + minutes)
         return hours
     }
     
@@ -85,5 +85,11 @@ struct RoundedCorner: Shape {
     func path(in rect: CGRect) -> Path {
         let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         return Path(path.cgPath)
+    }
+}
+
+extension UIApplication {
+    func endEditing() {
+        sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

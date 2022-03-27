@@ -76,7 +76,7 @@ struct Home: View {
                 .sheet(isPresented: $taskModel.addNewTask) {
                     taskModel.editTask = nil
                 } content: {
-                    NewTask()
+                    NewTask(taskDate: selectedDay)
                         .environmentObject(taskModel)
                 }
                 
@@ -160,7 +160,6 @@ struct TaskCardView: View {
     var task: Task
     var taskColor: Color
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
-
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             
@@ -201,32 +200,55 @@ struct TaskCardView: View {
          
             HStack {
                 let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
+                
+                let currentTime = task.taskEndTime?.rangeInt(from: Date()) ?? 0
+//                ZStack(alignment: .top) {
+//
+//                    Capsule()
+//                        .fill(taskColor)
+//                        .frame(width: 65, height: 45)
+//
+//                    Capsule()
+//                        .strokeBorder(.white, lineWidth: 3)
+//                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
+//                        .shadow(radius: 5)
+//
+//                }
+                
                 ZStack {
                     Capsule()
-                        .fill(taskColor)
-                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
-                    
-                    Capsule()
-                        .strokeBorder(.white, lineWidth: 3)
-                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
+                        .strokeBorder(.white, lineWidth: 5)
+                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt) + 10)
                         .shadow(radius: 5)
-
-                }
-              
                     
+                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat(currentTime)) : CGFloat(0))
+                        .fill(taskColor)
+                        .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt), alignment: .center)
+                        .clipShape(Capsule())
+                        .rotationEffect(.degrees(180))
+                }
+                                  
                 VStack(alignment: .leading, spacing: 5) {
                     let taskStartTime = taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm")
                     let taskEndTime = taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm")
                     let taskTimeRange = task.taskEndTime?.range(from: task.taskStartTime ?? Date()) ?? ""
+                    let remainderMin = task.taskEndTime?.rangeInt(from: Date()) ?? 0
                     
-                    Text(taskStartTime == taskEndTime ? "\(taskStartTime)" : "\(taskStartTime)-\(taskEndTime) \("(\(taskTimeRange))")")
+                    Text(taskModel.isCurrentHour(task: task) ? "\(remainderMin)min remaining" : taskStartTime == taskEndTime ? "\(taskStartTime)" : "\(taskStartTime)-\(taskEndTime) \("(\(taskTimeRange))")")
                         .font(.system(size: 12, weight: .medium))
                         .foregroundColor(.secondary)
                             
-                    Text(task.taskTitle ?? "")
-                        .font(.title2.bold())
-                        .foregroundColor(task.isCompleted ? .secondary : .black)
-                        .strikethrough(task.isCompleted ? true : false, color: task.isCompleted ? .secondary : .black)
+                    ZStack {
+                        Text(task.taskTitle ?? "")
+                            .font(.title2.bold())
+                            .foregroundColor(task.isCompleted ? .secondary : .black)
+            
+                        if task.isCompleted {
+                            Rectangle()
+                                .frame(height: 2, alignment: .center)
+                        }
+                    }
+                    .fixedSize()
                 }
                 
                 VStack(alignment: .center) {
@@ -370,17 +392,17 @@ struct HeaderWeeks: View {
     @Binding var selectedDay: Date
 
     var body: some View {
-        //                Button {
-        //                    withAnimation {
-        //                        taskModel.weekCounter -= 1
-        //                        taskModel.fetchCurrentWeek()
-        //                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: taskModel.selectedDay)!
-        //                    }
-        //
-        //                } label: {
-        //                    Image(systemName: "arrowtriangle.left.fill")
-        //                        .foregroundColor(.black)
-        //                }
+//                        Button {
+//                            withAnimation {
+//                                taskModel.weekCounter -= 1
+//                                taskModel.fetchCurrentWeek()
+//                                selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: selectedDay)!
+//                            }
+//
+//                        } label: {
+//                            Image(systemName: "arrowtriangle.left.fill")
+//                                .foregroundColor(.black)
+//                        }
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(alignment: .center, spacing: 5) {
@@ -389,7 +411,7 @@ struct HeaderWeeks: View {
                                         Capsule()
                                             .fill(.white)
                                             .frame(width: 47, height: 90)
-                                        
+                                            .shadow(radius: 0.5)
                                         if taskModel.isSelectedDate(date: day, selectDay: selectedDay) {
                                             Capsule()
                                                 .fill(taskModel.isToday(date: day) ? appThemeColor : .black)
@@ -511,6 +533,26 @@ struct BottomCard: View {
             }
         }
         .edgesIgnoringSafeArea(.all)
+    }
+}
+
+struct ProgressCapsule: Shape {
+    let progress: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        let width = rect.width
+        let height = rect.height
+        let progressHeight = height * progress / 100
+        
+        path.move(to: CGPoint(x: 0, y: progressHeight))
+        
+        path.addLine(to: CGPoint(x: width, y: progressHeight))
+        path.addLine(to: CGPoint(x: width, y: height))
+        path.addLine(to: CGPoint(x: 0, y: height))
+        path.addLine(to: CGPoint(x: 0, y: progressHeight))
+        
+        return path
     }
 }
 
