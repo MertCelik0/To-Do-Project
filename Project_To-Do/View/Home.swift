@@ -127,24 +127,9 @@ struct TaskView: View {
         LazyVStack {
             // Converting object as task model
             DynamicFilteredView(dateToFilter: selectedDay) { (object: Task) in
-                
                 TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
                     .environmentObject(taskModel)
                     .hLeading()
-                
-//                if fetchCount == 1 {
-//
-//
-//                }
-//                else {
-//                    Capsule()
-//                        .fill(Color(red: 66/255.0, green: 129/255.0, blue: 164/255.0))
-//                        .frame(width: 5, height: 50)
-//                        .shadow(radius: 5)
-//                        .offset(x: 45)
-//                        .hLeading()
-//                }
-
             }
             
         }
@@ -202,28 +187,16 @@ struct TaskCardView: View {
                 let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
                 
                 let currentTime = task.taskEndTime?.rangeInt(from: Date()) ?? 0
-//                ZStack(alignment: .top) {
-//
-//                    Capsule()
-//                        .fill(taskColor)
-//                        .frame(width: 65, height: 45)
-//
-//                    Capsule()
-//                        .strokeBorder(.white, lineWidth: 3)
-//                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
-//                        .shadow(radius: 5)
-//
-//                }
                 
                 ZStack {
                     Capsule()
                         .strokeBorder(.white, lineWidth: 5)
-                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt) + 10)
+                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
                         .shadow(radius: 5)
                     
-                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat( CGFloat((task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0))/100 - CGFloat(currentTime)/100)) : CGFloat(0))
+                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat( CGFloat((task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0))/100 - CGFloat(currentTime)/100) ) : CGFloat(0))
                         .fill(taskColor)
-                        .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt), alignment: .center)
+                        .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)-10, alignment: .center)
                         .clipShape(Capsule())
                         .rotationEffect(.degrees(180))
                 }
@@ -319,7 +292,7 @@ struct HeaderTop: View {
     @Binding var selectedDay: Date
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 5) {
             HStack {
                 HStack {
                     Text(taskModel.extractDate(date: selectedDay, format: "MMMM"))
@@ -334,7 +307,7 @@ struct HeaderTop: View {
                         
                 }
                 .hLeading()
-                HStack(spacing: 20) {
+                HStack(spacing: 12) {
                     Button {
                                            
                     } label: {
