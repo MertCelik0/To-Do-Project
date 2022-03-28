@@ -207,8 +207,9 @@ struct TaskCardView: View {
 //                        .clipShape(Capsule())
 //                        .rotationEffect(.degrees(180))
                     
-                    CircleWaveView(percent: Int(task.taskEndTime?.rangeInt(from: Date()) ?? 0), taskheight: taskHeight)
+                    CircleWaveView(percent: Int(taskModel.convertRange(taskRange: Date().rangeInt(from: task.taskStartTime ?? Date()) )), taskheight: taskHeight, task: task)
                         .frame(width: 65, height: taskHeight)
+                        .rotationEffect(.degrees(180))
                 }
                
                                   
@@ -526,11 +527,11 @@ struct CircleWaveView: View {
     @State private var waveOffset = Angle(degrees: 0)
     let percent: Int
     let taskheight: CGFloat
-
+    let task: Task
     var body: some View {
 
         Wave(offset: Angle(degrees: self.waveOffset.degrees), percent: Double(percent)/100)
-            .fill(Color(red: 0, green: 0.5, blue: 0.75, opacity: 0.5))
+            .fill(Color(red: Double(task.taskColor_R), green: Double(task.taskColor_G), blue: Double(task.taskColor_B), opacity: Double(task.taskColor_A)))
             .frame(width: 55, height: taskheight-10)
             .clipShape(Capsule())
 
@@ -545,7 +546,7 @@ struct Wave: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         
-        let waveHeight = percent == 1.0 ? CGFloat(0.0) : CGFloat(3.0)
+        let waveHeight = percent == 1.0 ? CGFloat(0.0) : percent == 0.0 ? CGFloat(0.0) : CGFloat(3.0)
         let yoffset = CGFloat(1 - percent) * (rect.height - 4 * waveHeight) + 2 * waveHeight
         let startAngle = offset
         let endAngle = offset + Angle(degrees: 360)

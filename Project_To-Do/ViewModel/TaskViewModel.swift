@@ -106,25 +106,68 @@ class TaskViewModel: ObservableObject {
 
         if taskTime >= 100 {
             taskTime = 100
-            return 60 * (1 + CGFloat(100) / 100)
+            return 65 * (1 + CGFloat(100) / 100)
         }
         else {
-            return 60 * (1 + CGFloat(taskTime) / 100)
+            return 65 * (1 + CGFloat(taskTime) / 100)
         }
         
     }
     
-    func asdasd(taskRange: Int) -> Int {
+    func convertRange(taskRange: Int) -> Int {
+        var range: Int = 0
+                
+        if taskRange >= 100 {
+            range = 100
+        } else {
+            range = taskRange
+        }
+//
+        let findvalue = 100 - range
         
-//        if taskRange <= 100 {
-//            return 0
-//        }
-//        else if taskRange >= && taskRange <= 99 {
-//            return 0
-//        }
-//        else if taskRange
-//        
-//        return 0
+        let taskPrecent = range
+   
+        print(taskPrecent)
+        
+        if taskPrecent >= 100 {
+            return 0
+        }
+        else if taskPrecent >= 90 && taskPrecent <= 99 {
+            return 10
+        }
+        else if taskPrecent >= 80 && taskPrecent <= 89 {
+            return 20
+        }
+        else if taskPrecent >= 70 && taskPrecent <= 79 {
+            return 30
+        }
+        else if taskPrecent >= 60 && taskPrecent <= 69 {
+            return 40
+        }
+        else if taskPrecent >= 50 && taskPrecent <= 59 {
+            return 50
+        }
+        else if taskPrecent >= 40 && taskPrecent <= 49 {
+            return 60
+        }
+        else if taskPrecent >= 30 && taskPrecent <= 39 {
+            return 70
+        }
+        else if taskPrecent >= 20 && taskPrecent <= 29 {
+            return 80
+        }
+        else if taskPrecent >= 10 && taskPrecent <= 19 {
+            return 90
+        }
+        else if taskPrecent >= 1 && taskPrecent <= 9 {
+            return 95
+        }
+        else if taskPrecent <= 0 {
+            return 100
+        }
+        else {
+            return 0
+        }
     }
 }
 
