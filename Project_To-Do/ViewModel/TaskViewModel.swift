@@ -103,14 +103,28 @@ class TaskViewModel: ObservableObject {
     // Get task height
     func getTaskHeight(taskTimeRange: Int) -> CGFloat {
         var taskTime = taskTimeRange
-        var value: Float = 0
 
-        if taskTime >= 200 {
-            taskTime = 200
+        if taskTime >= 100 {
+            taskTime = 100
+            return 60 * (1 + CGFloat(100) / 100)
+        }
+        else {
+            return 60 * (1 + CGFloat(taskTime) / 100)
         }
         
-        value = Float(taskTime) / 100
-        return CGFloat(65 * (1+value))
+    }
+    
+    func asdasd(taskRange: Int) -> Int {
+        
+//        if taskRange <= 100 {
+//            return 0
+//        }
+//        else if taskRange >= && taskRange <= 99 {
+//            return 0
+//        }
+//        else if taskRange
+//        
+//        return 0
     }
 }
 

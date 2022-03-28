@@ -144,7 +144,9 @@ struct TaskCardView: View {
     
     var task: Task
     var taskColor: Color
+    
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             
@@ -185,21 +187,30 @@ struct TaskCardView: View {
          
             HStack {
                 let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
+                let taskHeight = taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)
                 
-                let currentTime = task.taskEndTime?.rangeInt(from: Date()) ?? 0
+                
                 
                 ZStack {
+                    
+                    
                     Capsule()
                         .strokeBorder(.white, lineWidth: 5)
-                        .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt))
+                        .frame(width: 65, height: taskHeight)
                         .shadow(radius: 5)
                     
-                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat( CGFloat((task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0))/100 - CGFloat(currentTime)/100) ) : CGFloat(0))
-                        .fill(taskColor)
-                        .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)-10, alignment: .center)
-                        .clipShape(Capsule())
-                        .rotationEffect(.degrees(180))
+//                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat( CGFloat((task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0))/100 - CGFloat(currentTime)/100) ) : CGFloat(0))
+                    
+//                    ProgressCapsule(progress: Date().rangeInt(from: task.taskStartTime ?? Date()), total: task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0)
+//                        .fill(taskColor)
+//                        .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)-10, alignment: .center)
+//                        .clipShape(Capsule())
+//                        .rotationEffect(.degrees(180))
+                    
+                    CircleWaveView(percent: Int(task.taskEndTime?.rangeInt(from: Date()) ?? 0), taskheight: taskHeight)
+                        .frame(width: 65, height: taskHeight)
                 }
+               
                                   
                 VStack(alignment: .leading, spacing: 5) {
                     let taskStartTime = taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm")
@@ -509,23 +520,48 @@ struct BottomCard: View {
     }
 }
 
-struct ProgressCapsule: Shape {
-    let progress: CGFloat
+
+struct CircleWaveView: View {
+    
+    @State private var waveOffset = Angle(degrees: 0)
+    let percent: Int
+    let taskheight: CGFloat
+
+    var body: some View {
+
+        Wave(offset: Angle(degrees: self.waveOffset.degrees), percent: Double(percent)/100)
+            .fill(Color(red: 0, green: 0.5, blue: 0.75, opacity: 0.5))
+            .frame(width: 55, height: taskheight-10)
+            .clipShape(Capsule())
+
+    }
+}
+
+struct Wave: Shape {
+
+    var offset: Angle
+    var percent: Double
     
     func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let width = rect.width
-        let height = rect.height
-        let progressHeight = height * (1 - progress)
+        var p = Path()
         
-        path.move(to: CGPoint(x: 0, y: progressHeight))
+        let waveHeight = percent == 1.0 ? CGFloat(0.0) : CGFloat(3.0)
+        let yoffset = CGFloat(1 - percent) * (rect.height - 4 * waveHeight) + 2 * waveHeight
+        let startAngle = offset
+        let endAngle = offset + Angle(degrees: 360)
         
-        path.addLine(to: CGPoint(x: width, y: progressHeight))
-        path.addLine(to: CGPoint(x: width, y: height))
-        path.addLine(to: CGPoint(x: 0, y: height))
-        path.addLine(to: CGPoint(x: 0, y: progressHeight))
+        p.move(to: CGPoint(x: 0, y: yoffset + waveHeight * CGFloat(sin(offset.radians))))
         
-        return path
+        for angle in stride(from: startAngle.degrees, through: endAngle.degrees, by: 5) {
+            let x = CGFloat((angle - startAngle.degrees) / 360) * rect.width
+            p.addLine(to: CGPoint(x: x, y: yoffset + waveHeight * CGFloat(sin(Angle(degrees: angle).radians))))
+        }
+        
+        p.addLine(to: CGPoint(x: rect.width, y: rect.height))
+        p.addLine(to: CGPoint(x: 0, y: rect.height))
+        p.closeSubpath()
+        
+        return p
     }
 }
 
