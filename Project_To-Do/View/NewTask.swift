@@ -178,8 +178,8 @@ struct NewTask: View {
                                         VStack {
                                             SegmentView(taskTimeRange: $taskTimeRange, selectedIndex: $hoursSelectedIndex, options: [1, 15, 30, 45, 60, 90], color: taskColor)
                                             .onChange(of: taskTimeRange) { _ in
-                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: -beforeSelectedHour, to: selectEndTime) ?? selectEndTime
-                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: taskTimeRange, to: selectEndTime) ?? selectEndTime
+                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: -beforeSelectedHour, to: selectStartTime) ?? selectEndTime
+                                                selectEndTime = Calendar.current.date(byAdding: .minute, value: taskTimeRange, to: selectStartTime) ?? selectEndTime
                                                 beforeSelectedHour = taskTimeRange
                                             }
                                         }

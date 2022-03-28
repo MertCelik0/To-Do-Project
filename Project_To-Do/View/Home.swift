@@ -221,7 +221,7 @@ struct TaskCardView: View {
                         .frame(width: 65, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt) + 10)
                         .shadow(radius: 5)
                     
-                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat(currentTime)) : CGFloat(0))
+                    ProgressCapsule(progress: taskModel.isToday(date: task.taskDate ?? Date()) ? (currentTime <= 0 ? CGFloat(1) : CGFloat( CGFloat((task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0))/100 - CGFloat(currentTime)/100)) : CGFloat(0))
                         .fill(taskColor)
                         .frame(width: 55, height: taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt), alignment: .center)
                         .clipShape(Capsule())
@@ -543,7 +543,7 @@ struct ProgressCapsule: Shape {
         var path = Path()
         let width = rect.width
         let height = rect.height
-        let progressHeight = height * progress / 100
+        let progressHeight = height * (1 - progress)
         
         path.move(to: CGPoint(x: 0, y: progressHeight))
         

@@ -92,70 +92,13 @@ class TaskViewModel: ObservableObject {
         let now = Date()
         let startTime = calendar.date(byAdding: startTimeComponent, to: task.taskDate ?? Date())!
         let endTime = calendar.date(byAdding: endTimeComponent, to: task.taskDate ?? Date())!
-
-        print("\(startTime) + \(endTime)")
-
+        
         if startTime <= now && endTime >= now {
             return true
         } else {
             return false
         }
     }
-    
-    // Check is the current time after the task time?
-    func isCurrentHourAfterTaskTime(date: Date) -> Bool {
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: date)
-        let currenthour = calendar.component(.hour, from: Date())
-        return currenthour >= hour
-    }
-    
-    func getHoursAndMinutes(hour: Int, min: Int) -> String {
-        var components = DateComponents()
-        components.hour = hour
-        components.minute = min
-        let date = Calendar.current.date(from: components)
-        
-        return extractDate(date: date ?? Date(), format: "HH:mm")
-    }
-    func getHours(hour: Int) -> String {
-        var components = DateComponents()
-        components.hour = hour
-        let date = Calendar.current.date(from: components)
-        
-        return extractDate(date: date ?? Date(), format: "HH")
-    }
-    
-    func getMinutes(min: Int) -> String {
-        var components = DateComponents()
-        components.minute = min
-        let date = Calendar.current.date(from: components)
-        
-        return extractDate(date: date ?? Date(), format: "mm")
-    }
-    
-    func getMinuteForData(selectedMin: Int) -> Int {
-        var minData: Int = 0
-        if selectedMin <= 14 {
-            minData = 11
-        }
-        else {
-            minData = 3
-        }
-        return minData
-    }
-    
-    func getMinutemultiplyData(selectedMin: Int) -> Int {
-        var multiplyData: Int = 0
-        if selectedMin <= 14 {
-            multiplyData = 5
-        }
-        else {
-            multiplyData = 15
-        }
-        return multiplyData
-    }
-    
     
     // Get task height
     func getTaskHeight(taskTimeRange: Int) -> CGFloat {
