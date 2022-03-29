@@ -93,39 +93,44 @@ class TaskViewModel: ObservableObject {
         let startTime = calendar.date(byAdding: startTimeComponent, to: task.taskDate ?? Date())!
         let endTime = calendar.date(byAdding: endTimeComponent, to: task.taskDate ?? Date())!
         
-        if startTime <= now && endTime >= now {
-            return true
-        } else {
-            return false
-        }
+        return startTime <= now && endTime >= now
+    }
+    
+    // Check is the current time after the task time?
+    func isHourAfterTaskTime(task: Task) -> Bool {
+        let calendar = Calendar.current
+        
+        let starthour = calendar.component(.hour, from: task.taskStartTime ?? Date())
+        let startmin = calendar.component(.minute, from: task.taskStartTime ?? Date())
+
+        let startTimeComponent = DateComponents(calendar: calendar, hour: starthour, minute: startmin)
+
+        let now = Date()
+        let startTime = calendar.date(byAdding: startTimeComponent, to: task.taskDate ?? Date())!
+        
+        return startTime >= now
     }
     
     // Get task height
     func getTaskHeight(taskTimeRange: Int) -> CGFloat {
         var taskTime = taskTimeRange
 
-        if taskTime >= 100 {
+        if taskTimeRange >= 100 {
             taskTime = 100
-            return 65 * (1 + CGFloat(100) / 100)
-        }
-        else {
             return 65 * (1 + CGFloat(taskTime) / 100)
         }
-        
-    }
-    
-    // Check is the current time after the task time?
-    func isHourAfterTaskTime(date: Date) -> Bool {
-        let calendar = Calendar.current
-        let hour = calendar.component(.hour, from: date)
-        let currenthour = calendar.component(.hour, from: Date())
-        return currenthour >= hour
+        else if taskTimeRange >= 0 && taskTimeRange <= 99 {
+            taskTime = taskTimeRange
+            return 65 * (1 + CGFloat(taskTime) / 100)
+        }
+        else {
+            return 65
+        }
     }
     
     func convertRange(percent: Int, maks: Int) -> Double {
-        let taskPrecent = (Double(percent) / Double(maks)) * 100
-        print(taskPrecent)
-        return 100 - taskPrecent
+        let taskPrecent = (Double(percent) / Double(maks))
+        return 1 - taskPrecent
     }
 }
 
