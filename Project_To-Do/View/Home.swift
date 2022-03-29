@@ -209,7 +209,6 @@ struct TaskCardView: View {
                         .fill(Color(red: Double(task.taskColor_R), green: Double(task.taskColor_G), blue: Double(task.taskColor_B), opacity: Double(task.taskColor_A)))
                         .frame(width: 55, height: taskHeight-10)
                         .clipShape(Capsule())
-                        .rotationEffect(.degrees(180))
                 }
                
                                   
