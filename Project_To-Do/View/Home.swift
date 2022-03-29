@@ -188,7 +188,7 @@ struct TaskCardView: View {
             HStack {
                 let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
                 let taskHeight = taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)
-                
+                let remainderMin = Date().rangeInt(from: task.taskStartTime ?? Date())
                 
                 
                 ZStack {
@@ -207,9 +207,16 @@ struct TaskCardView: View {
 //                        .clipShape(Capsule())
 //                        .rotationEffect(.degrees(180))
                     
-                    CircleWaveView(percent: Int(taskModel.convertRange(taskRange: Date().rangeInt(from: task.taskStartTime ?? Date()) )), taskheight: taskHeight, task: task)
+                    //Int(taskModel.convertRange(percent: remainderMin, maks: taskTimeRangeInt )
+                    
+                    //.fill(task.isCompleted ? .green : (taskModel.isCurrentHour(date: task.taskDate ?? Date()) ? .black : (taskModel.isCurrentHourAfterTaskTime(date: task.taskDate ?? Date()) ? .red : .clear)))
+
+                    
+                    CircleWaveView(percent: Int(taskModel.isToday(date: task.taskDate ?? Date()) ? 0 :  0 ), taskheight: taskHeight, task: task)
                         .frame(width: 65, height: taskHeight)
                         .rotationEffect(.degrees(180))
+                   
+                    
                 }
                
                                   
@@ -530,7 +537,7 @@ struct CircleWaveView: View {
     let task: Task
     var body: some View {
 
-        Wave(offset: Angle(degrees: self.waveOffset.degrees), percent: Double(percent)/100)
+        Wave(offset: Angle(degrees: self.waveOffset.degrees), percent: Double(percent))
             .fill(Color(red: Double(task.taskColor_R), green: Double(task.taskColor_G), blue: Double(task.taskColor_B), opacity: Double(task.taskColor_A)))
             .frame(width: 55, height: taskheight-10)
             .clipShape(Capsule())
@@ -546,8 +553,10 @@ struct Wave: Shape {
     func path(in rect: CGRect) -> Path {
         var p = Path()
         
-        let waveHeight = percent == 1.0 ? CGFloat(0.0) : percent == 0.0 ? CGFloat(0.0) : CGFloat(3.0)
-        let yoffset = CGFloat(1 - percent) * (rect.height - 4 * waveHeight) + 2 * waveHeight
+        let precentOperation = percent/100
+                
+        let waveHeight = precentOperation == 1.0 ? CGFloat(0.0) : precentOperation == 0.0 ? CGFloat(0.0) : CGFloat(3.0)
+        let yoffset = CGFloat(precentOperation) * (rect.height - 4 * waveHeight) + 2 * waveHeight
         let startAngle = offset
         let endAngle = offset + Angle(degrees: 360)
         
