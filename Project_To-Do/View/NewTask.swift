@@ -21,6 +21,8 @@ struct NewTask: View {
     @State var taskTimeRange: Int = 0
     @State var hoursSelectedIndex: Int = 0
     @State var beforeSelectedHour: Int = 0
+    @State var timeArray: [Int] = [1, 15, 30, 45, 60, 90, 120]
+    @State var filteredTimeArray: [Int] = [1, 15, 30, 45, 60, 90, 120]
 
     //MARK: CoreData Context
     @Environment(\.managedObjectContext) var context
@@ -34,6 +36,12 @@ struct NewTask: View {
                     Section {
                         ScrollView {
                             VStack(spacing: 40) {
+                                
+                                VStack {
+                                    Section {
+                                        ColorView(selectionColor: $taskColor)
+                                    }
+                                }
                                 
                                 VStack {
                                     Section {
@@ -133,6 +141,7 @@ struct NewTask: View {
                                             .onChange(of: taskDate) { newValue in
                                                 selectStartTime = taskDate
                                                 selectEndTime = taskDate
+                                                filteredTimeArray = timeArray
                                                 hoursSelectedIndex = 0
                                                 beforeSelectedHour = 0
                                             }
@@ -145,6 +154,18 @@ struct NewTask: View {
                                                 DatePicker("", selection: $selectStartTime, displayedComponents: .hourAndMinute ).colorInvert().colorMultiply(taskColor)
                                                     .labelsHidden()
                                                     .environment(\.locale, Locale.init(identifier: "en_GB"))
+                                                    .onChange(of: selectStartTime, perform: { newValue in
+                                                        var array: [Int] = []
+                                                        for time in timeArray {
+                                                            if Calendar.current.isDate(taskDate, inSameDayAs: Calendar.current.date(byAdding: .minute, value: time, to: selectStartTime) ?? selectStartTime) {
+                                                                array.append(time)
+                                                            }
+                                                        }
+                                                        filteredTimeArray.removeAll()
+                                                        for time in array {
+                                                            filteredTimeArray.append(time)
+                                                        }
+                                                    })
                                             }
                                           
                                             HStack {
@@ -176,10 +197,22 @@ struct NewTask: View {
                                 VStack {
                                     Section {
                                         VStack {
-                                            SegmentView(taskTimeRange: $taskTimeRange, selectedIndex: $hoursSelectedIndex, options: [1, 15, 30, 45, 60, 90], color: taskColor)
+                                            SegmentView(taskTimeRange: $taskTimeRange, selectedIndex: $hoursSelectedIndex, options: filteredTimeArray, color: taskColor)
+                                                .onAppear(perform: {
+                                                    var array: [Int] = []
+                                                    for time in timeArray {
+                                                        if Calendar.current.isDate(taskDate, inSameDayAs: Calendar.current.date(byAdding: .minute, value: time, to: selectStartTime) ?? selectStartTime) {
+                                                            array.append(time)
+                                                        }
+                                                    }
+                                                    filteredTimeArray.removeAll()
+                                                    for time in array {
+                                                        filteredTimeArray.append(time)
+                                                    }                                                })
                                             .onChange(of: taskTimeRange) { _ in
                                                 selectEndTime = Calendar.current.date(byAdding: .minute, value: -beforeSelectedHour, to: selectStartTime) ?? selectEndTime
                                                 selectEndTime = Calendar.current.date(byAdding: .minute, value: taskTimeRange, to: selectStartTime) ?? selectEndTime
+                                                
                                                 beforeSelectedHour = taskTimeRange
                                             }
                                         }
@@ -193,22 +226,6 @@ struct NewTask: View {
                                             Spacer()
                                         }
                                     }
-                                }
-                              
-                                VStack {
-                                    Section {
-                                        ColorView(selectionColor: $taskColor)
-                                    } header: {
-                                        HStack {
-                                            Text("Task Color")
-                                                .foregroundColor(.secondary)
-                                                .font(.title2)
-                                                .bold()
-                                            
-                                            Spacer()
-                                        }
-                                    }
-                                
                                 }
 
                                 Spacer()
@@ -255,8 +272,8 @@ struct NewTask: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     HStack {
-                        Text("TASK").font(.title).foregroundColor(taskColor).bold()
                         Text("CREATE").font(.title).foregroundColor(.black).bold()
+                        Text("TASK").font(.title).foregroundColor(taskColor).bold()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {

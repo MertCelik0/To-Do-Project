@@ -58,6 +58,8 @@ struct SegmentView: View {
             return "1hr"
         case 90:
             return "1,5hr"
+        case 120:
+            return "2hr"
         default:
             return ""
         }

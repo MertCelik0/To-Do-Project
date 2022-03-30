@@ -57,7 +57,7 @@ extension Date {
     
     // Returns minutes range Int
     func rangeInt(from date: Date) -> Int {
-        let dayHourMinuteSecond: Set<Calendar.Component> = [.minute]
+        let dayHourMinuteSecond: Set<Calendar.Component> = [.minute, .second]
         let difference = NSCalendar.current.dateComponents(dayHourMinuteSecond, from: getStringDate(from: getFormattedDateString(from: date)), to: self).minute ?? 0
         return difference
     }

@@ -6,8 +6,28 @@
 //
 
 import SwiftUI
+import Combine
+
+class CustomTimer {
+    let currentTimePublisher = Timer.TimerPublisher(interval: 1.0, runLoop: .main, mode: .default)
+    let cancellable: AnyCancellable?
+   
+    init() {
+        self.cancellable = currentTimePublisher.connect() as? AnyCancellable
+    }
+
+    deinit {
+        self.cancellable?.cancel()
+    }
+}
+
+
+// Start Timer
+let timer = CustomTimer()
+
 
 struct Home: View {
+    
     
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
 
@@ -123,13 +143,18 @@ struct TaskView: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
     @Binding var selectedDay: Date
 
+    @State var currentTime: Date = Date()
+
     var body: some View {
         LazyVStack {
             // Converting object as task model
             DynamicFilteredView(dateToFilter: selectedDay) { (object: Task) in
-                TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
+                TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)), currentTime: self.currentTime)
                     .environmentObject(taskModel)
                     .hLeading()
+                    .onReceive(timer.currentTimePublisher) { newCurrentTime in
+                        self.currentTime = newCurrentTime
+                    }
             }
             
         }
@@ -148,6 +173,8 @@ struct TaskCardView: View {
     var taskColor: Color
     
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    
+    var currentTime: Date
     
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
@@ -188,9 +215,9 @@ struct TaskCardView: View {
             
          
             HStack {
-                let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? Date()) ?? 0
+                let taskTimeRangeInt = task.taskEndTime?.rangeInt(from: task.taskStartTime ?? currentTime) ?? 0
                 let taskHeight = taskModel.getTaskHeight(taskTimeRange: taskTimeRangeInt)
-                let currentRange = Date().rangeInt(from: task.taskStartTime ?? Date())
+                let currentRange = currentTime.rangeInt(from: task.taskStartTime ?? currentTime)
                 
                 
                 ZStack {
@@ -209,18 +236,20 @@ struct TaskCardView: View {
                         .fill(Color(red: Double(task.taskColor_R), green: Double(task.taskColor_G), blue: Double(task.taskColor_B), opacity: Double(task.taskColor_A)))
                         .frame(width: 55, height: taskHeight-10)
                         .clipShape(Capsule())
+                    
                 }
                
                                   
                 VStack(alignment: .leading, spacing: 5) {
-                    let taskStartTime = taskModel.extractDate(date: task.taskStartTime ?? Date(), format: "HH:mm")
-                    let taskEndTime = taskModel.extractDate(date: task.taskEndTime ?? Date(), format: "HH:mm")
-                    let taskTimeRange = task.taskEndTime?.range(from: task.taskStartTime ?? Date()) ?? ""
-                    let remainderMin = task.taskEndTime?.rangeInt(from: Date()) ?? 0
+                    let taskStartTime = taskModel.extractDate(date: task.taskStartTime ?? currentTime, format: "HH:mm")
+                    let taskEndTime = taskModel.extractDate(date: task.taskEndTime ?? currentTime, format: "HH:mm")
+                    let taskTimeRange = task.taskEndTime?.range(from: task.taskStartTime ?? currentTime) ?? ""
+                    let remainderMin = task.taskEndTime?.rangeInt(from: currentTime) ?? 0
+                    let checkCurrentHour = taskModel.isCurrentHour(task: task)
                     
-                    Text(taskModel.isCurrentHour(task: task) ? "\(remainderMin)min remaining" : taskStartTime == taskEndTime ? "\(taskStartTime)" : "\(taskStartTime)-\(taskEndTime) \("(\(taskTimeRange))")")
-                        .font(.system(size: 12, weight: .medium))
-                        .foregroundColor(.secondary)
+                    Text(checkCurrentHour ? "\(remainderMin)min remaining" : taskStartTime == taskEndTime ? "\(taskStartTime)" : "\(taskStartTime)-\(taskEndTime) \("(\(taskTimeRange))")")
+                        .font(checkCurrentHour ? .system(size: 13, weight: .bold) : .system(size: 13, weight: .medium))
+                        .foregroundColor(checkCurrentHour ? .black : .secondary)
                             
                     ZStack {
                         Text(task.taskTitle ?? "")
@@ -490,18 +519,6 @@ struct BottomCard: View {
                     VStack(spacing: 5) {
                         DatePicker("", selection: $selectedDay, displayedComponents: .date)
                             .datePickerStyle(.graphical)
-                        
-                        Button {
-                            
-                        } label: {
-                            Text("Go To Selected Date")
-                                .foregroundColor(.white)
-                                .font(.system(size: 15))
-                                .frame(width: UIScreen.main.bounds.width/1.3, height: 50)
-                                .background(appThemeColor)
-                                .cornerRadius(10)
-                                .padding()
-                        }
                     }
                     .padding()
                 }
