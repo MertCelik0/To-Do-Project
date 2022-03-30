@@ -22,7 +22,7 @@ struct NewTask: View {
     @State var hoursSelectedIndex: Int = 0
     @State var beforeSelectedHour: Int = 0
     @State var timeArray: [Int] = [1, 15, 30, 45, 60, 90, 120]
-    @State var filteredTimeArray: [Int] = [1, 15, 30, 45, 60, 90, 120]
+    @State var filteredTimeArray: [Int] = []
 
     //MARK: CoreData Context
     @Environment(\.managedObjectContext) var context
@@ -136,14 +136,14 @@ struct NewTask: View {
                                                  ).colorInvert().colorMultiply(taskColor)
                                                     .labelsHidden()
                                                     .environment(\.locale, Locale.init(identifier: "en_GB"))
-
+                                                    
                                             }
+                                            .onAppear(perform: {
+                                                getCurrentTimeAndResetValues()
+                                            })
                                             .onChange(of: taskDate) { newValue in
-                                                selectStartTime = taskDate
-                                                selectEndTime = taskDate
-                                                filteredTimeArray = timeArray
-                                                hoursSelectedIndex = 0
-                                                beforeSelectedHour = 0
+                                                getCurrentTimeAndResetValues()
+
                                             }
                                             
                                             HStack {
@@ -151,7 +151,8 @@ struct NewTask: View {
                                                     .font(.title3)
                                                     .bold()
                                                 Spacer()
-                                                DatePicker("", selection: $selectStartTime, displayedComponents: .hourAndMinute ).colorInvert().colorMultiply(taskColor)
+                                                DatePicker("", selection: $selectStartTime, in: Date.distantPast...Date.distantFuture, displayedComponents: .hourAndMinute )
+                                                    .colorInvert().colorMultiply(taskColor)
                                                     .labelsHidden()
                                                     .environment(\.locale, Locale.init(identifier: "en_GB"))
                                                     .onChange(of: selectStartTime, perform: { newValue in
@@ -173,7 +174,8 @@ struct NewTask: View {
                                                     .font(.title3)
                                                     .bold()
                                                 Spacer()
-                                                DatePicker("", selection: $selectEndTime, in: selectStartTime..., displayedComponents: .hourAndMinute).colorInvert().colorMultiply(taskColor)
+                                                DatePicker("", selection: $selectEndTime, in: selectStartTime...Date.distantFuture, displayedComponents: .hourAndMinute)
+                                                    .colorInvert().colorMultiply(taskColor)
                                                    .labelsHidden()
                                                    .environment(\.locale, Locale.init(identifier: "en_GB"))
 
@@ -198,17 +200,6 @@ struct NewTask: View {
                                     Section {
                                         VStack {
                                             SegmentView(taskTimeRange: $taskTimeRange, selectedIndex: $hoursSelectedIndex, options: filteredTimeArray, color: taskColor)
-                                                .onAppear(perform: {
-                                                    var array: [Int] = []
-                                                    for time in timeArray {
-                                                        if Calendar.current.isDate(taskDate, inSameDayAs: Calendar.current.date(byAdding: .minute, value: time, to: selectStartTime) ?? selectStartTime) {
-                                                            array.append(time)
-                                                        }
-                                                    }
-                                                    filteredTimeArray.removeAll()
-                                                    for time in array {
-                                                        filteredTimeArray.append(time)
-                                                    }                                                })
                                             .onChange(of: taskTimeRange) { _ in
                                                 selectEndTime = Calendar.current.date(byAdding: .minute, value: -beforeSelectedHour, to: selectStartTime) ?? selectEndTime
                                                 selectEndTime = Calendar.current.date(byAdding: .minute, value: taskTimeRange, to: selectStartTime) ?? selectEndTime
@@ -308,11 +299,36 @@ struct NewTask: View {
                    
 
  //               }
+                
             }
-        
+           
         }
         
 
+    }
+    
+    func getCurrentTimeAndResetValues() {
+        let hour = Calendar.current.component(.hour, from: Date())
+        let minutes = Calendar.current.component(.minute, from: Date())
+        let sec = Calendar.current.component(.second, from: Date())
+        
+        selectStartTime = Calendar.current.date(bySettingHour: hour, minute: minutes, second: sec, of: taskDate)!
+        selectEndTime = Calendar.current.date(bySettingHour: hour, minute: minutes, second: sec, of: taskDate)!
+        filteredTimeArray = timeArray
+        hoursSelectedIndex = 0
+        beforeSelectedHour = 0
+        
+        var array: [Int] = []
+        for time in timeArray {
+            if Calendar.current.isDate(taskDate, inSameDayAs: Calendar.current.date(byAdding: .minute, value: time, to: selectStartTime) ?? selectStartTime) {
+                array.append(time)
+            }
+        }
+        filteredTimeArray.removeAll()
+        for time in array {
+            filteredTimeArray.append(time)
+        }
+    
     }
 }
 
