@@ -233,6 +233,7 @@ struct NewTask: View {
                             .padding()
                         }
                     } footer: {
+                        
                         Button {
                             if let task = taskModel.editTask {
                                 task.taskTitle = taskTitle
