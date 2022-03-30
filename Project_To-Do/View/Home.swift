@@ -37,8 +37,9 @@ struct Home: View {
     // Edit Button Context
     @Environment(\.editMode) var editMode
 
-    @State var cardShow = false
-        
+    @State var calendarCardShow = false
+    @State var taskCardShow = false
+
     // Selected Day
     @State var selectedDay: Date = Date()
     
@@ -59,15 +60,16 @@ struct Home: View {
                             
                             ScrollView(showsIndicators: false) {
                                 VStack{
-                                    TaskView(selectedDay: $selectedDay)
+                                    TaskView(selectedDay: $selectedDay, taskCardShow: $taskCardShow)
                                         .environmentObject(taskModel)
+                                    
                                 }
                                 .padding(.bottom, 150)
                             }
                         }
                    
                     } header: {
-                        Header(cardShow: $cardShow, selectedDay: $selectedDay)
+                        Header(calendarCardShow: $calendarCardShow, selectedDay: $selectedDay)
                             .environmentObject(taskModel)
                     }
                     .edgesIgnoringSafeArea(.bottom)
@@ -100,7 +102,11 @@ struct Home: View {
                         .environmentObject(taskModel)
                 }
                 
-                BottomCard(cardShow: $cardShow, selectedDay: $selectedDay)
+                BottomCardCalendar(calendarCardShow: $calendarCardShow, selectedDay: $selectedDay)
+                    .environmentObject(taskModel)
+                    .animation(.default)
+                
+                BottomCardTask(cardShow: $taskCardShow, selectedDay: $selectedDay)
                     .environmentObject(taskModel)
                     .animation(.default)
             }
@@ -142,19 +148,20 @@ struct Home: View {
 struct TaskView: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
     @Binding var selectedDay: Date
-
+    @Binding var taskCardShow: Bool
     @State var currentTime: Date = Date()
 
     var body: some View {
         LazyVStack {
             // Converting object as task model
             DynamicFilteredView(dateToFilter: selectedDay) { (object: Task) in
-                TaskCardView(task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)), currentTime: self.currentTime)
-                    .environmentObject(taskModel)
-                    .hLeading()
-                    .onReceive(timer.currentTimePublisher) { newCurrentTime in
-                        self.currentTime = newCurrentTime
-                    }
+                TaskCardView(taskCardShow: $taskCardShow, task: object, taskColor: Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)), currentTime: self.currentTime)
+                        .environmentObject(taskModel)
+                        .hLeading()
+                        .onReceive(timer.currentTimePublisher) { newCurrentTime in
+                            self.currentTime = newCurrentTime
+                        }
+                        
             }
             
         }
@@ -168,7 +175,7 @@ struct TaskCardView: View {
 
     //MARK: CoreData Context
     @Environment(\.managedObjectContext) var context
-    
+    @Binding var taskCardShow: Bool
     var task: Task
     var taskColor: Color
     
@@ -299,19 +306,25 @@ struct TaskCardView: View {
                 .hTrailing()
             }
         }
+        .background(Color.white)
+        .onTapGesture {
+            taskCardShow.toggle()
+
+        }
         .padding()
     }
+    
 }
 
 struct Header: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
-    @Binding var cardShow: Bool
+    @Binding var calendarCardShow: Bool
     @Binding var selectedDay: Date
 
     var body: some View {
         VStack(spacing: 0) {
             HStack() {
-               HeaderTop(cardShow: $cardShow, selectedDay: $selectedDay)
+               HeaderTop(calendarCardShow: $calendarCardShow, selectedDay: $selectedDay)
                     .environmentObject(taskModel)
             }
             .padding()
@@ -328,7 +341,7 @@ struct Header: View {
 
 struct HeaderTop: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
-    @Binding var cardShow: Bool
+    @Binding var calendarCardShow: Bool
     @Binding var selectedDay: Date
 
     var body: some View {
@@ -359,7 +372,7 @@ struct HeaderTop: View {
                     
                     
                     Button {
-                        cardShow.toggle()
+                        calendarCardShow.toggle()
                     } label: {
                         Image(systemName: "calendar")
                             .resizable()
@@ -494,7 +507,51 @@ struct HeaderWeeks: View {
 
 
 
-struct BottomCard: View {
+struct BottomCardCalendar: View {
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @Binding var calendarCardShow: Bool
+    @Binding var selectedDay: Date
+
+    var body: some View {
+        ZStack {
+            // background
+            GeometryReader { _ in
+                EmptyView()
+            }
+            .background(Color.gray.opacity(0.5))
+            .opacity(calendarCardShow ? 1: 0)
+            .animation(Animation.easeIn)
+            .onTapGesture {
+                calendarCardShow.toggle()
+            }
+            
+            //Card
+            VStack {
+                Spacer()
+                VStack {
+                    VStack(spacing: 5) {
+                        DatePicker("", selection: $selectedDay, displayedComponents: .date)
+                            .datePickerStyle(.graphical)
+                    }
+                    .padding()
+                }
+                .background(Color.white)
+                .frame(height: UIScreen.main.bounds.height/2)
+                .cornerRadius(20, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+                .shadow(color: calendarCardShow ? .gray : .clear, radius: calendarCardShow ? 1 : 0)
+                .offset(y: calendarCardShow ? 0 : UIScreen.main.bounds.height/2)
+                .opacity(calendarCardShow ? 1 : 0)
+                .padding()
+                .animation(.default)
+
+            }
+        }
+        .edgesIgnoringSafeArea(.all)
+    }
+}
+
+
+struct BottomCardTask: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
     @Binding var cardShow: Bool
     @Binding var selectedDay: Date
@@ -511,7 +568,7 @@ struct BottomCard: View {
             .onTapGesture {
                 cardShow.toggle()
             }
-            
+
             //Card
             VStack {
                 Spacer()
@@ -536,8 +593,6 @@ struct BottomCard: View {
         .edgesIgnoringSafeArea(.all)
     }
 }
-
-
 
 struct Wave: Shape {
 
