@@ -37,6 +37,12 @@ struct NewTask: View {
                                 
                                 VStack {
                                     Section {
+                                        ColorView(selectionColor: $taskColor)
+                                    }
+                                }
+                                
+                                VStack {
+                                    Section {
                                         HStack(spacing: 10) {
                                             Rectangle()
                                                 .fill(.gray)
@@ -194,28 +200,13 @@ struct NewTask: View {
                                         }
                                     }
                                 }
-                              
-                                VStack {
-                                    Section {
-                                        ColorView(selectionColor: $taskColor)
-                                    } header: {
-                                        HStack {
-                                            Text("Task Color")
-                                                .foregroundColor(.secondary)
-                                                .font(.title2)
-                                                .bold()
-                                            
-                                            Spacer()
-                                        }
-                                    }
-                                
-                                }
 
                                 Spacer()
                             }
                             .padding()
                         }
                     } footer: {
+                        
                         Button {
                             if let task = taskModel.editTask {
                                 task.taskTitle = taskTitle
@@ -255,8 +246,8 @@ struct NewTask: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     HStack {
-                        Text("TASK").font(.title).foregroundColor(taskColor).bold()
                         Text("CREATE").font(.title).foregroundColor(.black).bold()
+                        Text("TASK").font(.title).foregroundColor(taskColor).bold()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {

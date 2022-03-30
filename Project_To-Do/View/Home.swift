@@ -490,18 +490,6 @@ struct BottomCard: View {
                     VStack(spacing: 5) {
                         DatePicker("", selection: $selectedDay, displayedComponents: .date)
                             .datePickerStyle(.graphical)
-                        
-                        Button {
-                            
-                        } label: {
-                            Text("Go To Selected Date")
-                                .foregroundColor(.white)
-                                .font(.system(size: 15))
-                                .frame(width: UIScreen.main.bounds.width/1.3, height: 50)
-                                .background(appThemeColor)
-                                .cornerRadius(10)
-                                .padding()
-                        }
                     }
                     .padding()
                 }

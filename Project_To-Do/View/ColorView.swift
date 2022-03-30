@@ -23,7 +23,7 @@ struct ColorView: View {
             ForEach(swatches, id: \.self){ swatch in
                 ZStack {
                     Rectangle()
-                        .fill(selectionColor.opacity(0.2))
+                        .fill(selectionColor.opacity(0.0))
                     Circle()
                         .fill(swatch)
                         .frame(width: selectionColor == swatch ? 18 : 25, height: selectionColor == swatch ? 18 : 25)
@@ -40,7 +40,7 @@ struct ColorView: View {
             }
             ZStack {
                 Rectangle()
-                    .fill(selectionColor.opacity(0.2))
+                    .fill(selectionColor.opacity(0.0))
                 ColorPicker("", selection: $selectionColor)
                     .padding()
 
