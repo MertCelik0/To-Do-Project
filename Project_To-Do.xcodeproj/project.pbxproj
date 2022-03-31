@@ -23,6 +23,7 @@
 		E1E4017A27E61902006499AB /* DynamicFilteredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E4017927E61902006499AB /* DynamicFilteredView.swift */; };
 		E1E4017C27E624A6006499AB /* NewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E4017B27E624A6006499AB /* NewTask.swift */; };
 		E1E4017E27EA2B60006499AB /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E4017D27EA2B60006499AB /* Extension.swift */; };
+		E1E8155A27F5E4CD005335ED /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1E8155927F5E4CD005335ED /* Settings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,7 @@
 		E1E4017927E61902006499AB /* DynamicFilteredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicFilteredView.swift; sourceTree = "<group>"; };
 		E1E4017B27E624A6006499AB /* NewTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTask.swift; sourceTree = "<group>"; };
 		E1E4017D27EA2B60006499AB /* Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		E1E8155927F5E4CD005335ED /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +159,7 @@
 				E12A013527EE663800CEC8AE /* SegmentView.swift */,
 				E1E4017927E61902006499AB /* DynamicFilteredView.swift */,
 				E12A014D27EF7C9F00CEC8AE /* CustomTextField.swift */,
+				E1E8155927F5E4CD005335ED /* Settings.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -186,6 +189,8 @@
 			dependencies = (
 			);
 			name = "Project_To-Do";
+			packageProductDependencies = (
+			);
 			productName = "Project_To-Do";
 			productReference = E12A48FD27E263F60037015A /* Project_To-Do.app */;
 			productType = "com.apple.product-type.application";
@@ -258,6 +263,8 @@
 				Base,
 			);
 			mainGroup = E12A48F427E263F60037015A;
+			packageReferences = (
+			);
 			productRefGroup = E12A48FE27E263F60037015A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -306,6 +313,7 @@
 				E1E4017A27E61902006499AB /* DynamicFilteredView.swift in Sources */,
 				E12A013627EE663800CEC8AE /* SegmentView.swift in Sources */,
 				E1E4017827E60B88006499AB /* TaskViewModel.swift in Sources */,
+				E1E8155A27F5E4CD005335ED /* Settings.swift in Sources */,
 				E12408F827EE48AE00B77A34 /* ColorView.swift in Sources */,
 				E12A490D27E263F80037015A /* Project_To_Do.xcdatamodeld in Sources */,
 				E12A493127E264480037015A /* Home.swift in Sources */,
@@ -471,7 +479,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Project_To-Do/Preview Content\"";
-				DEVELOPMENT_TEAM = R673V2XUP3;
+				DEVELOPMENT_TEAM = KK9M8Z6YRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -502,7 +510,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Project_To-Do/Preview Content\"";
-				DEVELOPMENT_TEAM = R673V2XUP3;
+				DEVELOPMENT_TEAM = KK9M8Z6YRL;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

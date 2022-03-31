@@ -28,7 +28,6 @@ let timer = CustomTimer()
 
 struct Home: View {
     
-    
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
 
     // Coredate Context
@@ -43,6 +42,7 @@ struct Home: View {
     // Selected Day
     @State var selectedDay: Date = Date()
     
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -62,7 +62,6 @@ struct Home: View {
                                 VStack{
                                     TaskView(selectedDay: $selectedDay, taskCardShow: $taskCardShow)
                                         .environmentObject(taskModel)
-                                    
                                 }
                                 .padding(.bottom, 150)
                             }
@@ -106,9 +105,10 @@ struct Home: View {
                     .environmentObject(taskModel)
                     .animation(.default)
                 
-                BottomCardTask(cardShow: $taskCardShow, selectedDay: $selectedDay)
+                BottomCardTask(cardShow: $taskCardShow)
                     .environmentObject(taskModel)
                     .animation(.default)
+               
             }
            
         }
@@ -307,10 +307,7 @@ struct TaskCardView: View {
             }
         }
         .background(Color.white)
-        .onTapGesture {
-            taskCardShow.toggle()
-
-        }
+    
         .padding()
     }
     
@@ -382,7 +379,7 @@ struct HeaderTop: View {
                     
                     
                     Button {
-                                
+                        taskModel.SettingsTask.toggle()
                     } label: {
                         Image(systemName: "gearshape")
                             .resizable()
@@ -390,6 +387,11 @@ struct HeaderTop: View {
                             .clipShape(Circle())
                             .foregroundColor(.black)
 
+                    }
+                    .sheet(isPresented: $taskModel.SettingsTask) {
+                        
+                    } content: {
+                        Settings()
                     }
                     
                     Button {
@@ -554,7 +556,8 @@ struct BottomCardCalendar: View {
 struct BottomCardTask: View {
     @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
     @Binding var cardShow: Bool
-    @Binding var selectedDay: Date
+    // Coredate Context
+    @Environment(\.managedObjectContext) var context
 
     var body: some View {
         ZStack {
@@ -570,25 +573,69 @@ struct BottomCardTask: View {
             }
 
             //Card
-            VStack {
-                Spacer()
-                VStack {
-                    VStack(spacing: 5) {
-                        DatePicker("", selection: $selectedDay, displayedComponents: .date)
-                            .datePickerStyle(.graphical)
-                    }
-                    .padding()
-                }
-                .background(Color.white)
-                .frame(height: UIScreen.main.bounds.height/2)
-                .cornerRadius(20, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
-                .shadow(color: cardShow ? .gray : .clear, radius: cardShow ? 1 : 0)
-                .offset(y: cardShow ? 0 : UIScreen.main.bounds.height/2)
-                .opacity(cardShow ? 1 : 0)
-                .padding()
-                .animation(.default)
-
-            }
+//            VStack {
+//                Spacer()
+//                VStack {
+//                    VStack(alignment: .leading, spacing: 25) {
+//                        VStack(spacing: 10) {
+//                            HStack(spacing : 10) {
+//                                Button {
+//                                    taskModel.editTask = selectedTask
+//                                    taskModel.addNewTask.toggle()
+//
+//                                } label: {
+//                                    HStack {
+//                                        Spacer()
+//                                        Image(systemName: "square.and.pencil")
+//                                            .font(Font.body.weight(.medium))
+//                                            .padding(.vertical, 20)
+//                                            .foregroundColor(.white)
+//                                        Text("Edit")
+//                                            .font(Font.body.weight(.medium))
+//                                            .padding(.vertical, 20)
+//                                            .foregroundColor(.white)
+//                                        Spacer()
+//                                    }.background(appThemeColor).cornerRadius(12)
+//                                }
+//
+//
+//                                Button {
+//                                    withAnimation {
+//                                        // Deleting Task
+//                                        context.delete(selectedTask)
+//                                        //Saving
+//                                        try? context.save()
+//                                    }
+//                                } label: {
+//                                    HStack {
+//                                        Spacer()
+//                                        Image(systemName: "trash")
+//                                            .font(Font.body.weight(.medium))
+//                                            .padding(.vertical, 20)
+//                                            .foregroundColor(.white)
+//                                        Text("Delete")
+//                                            .font(Font.body.weight(.medium))
+//                                            .padding(.vertical, 20)
+//                                            .foregroundColor(.white)
+//                                        Spacer()
+//                                    }.background(appThemeColor).cornerRadius(12)
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                    .padding()
+//                }
+//                .background(Color.white)
+//                .frame(height: UIScreen.main.bounds.height/2)
+//                .cornerRadius(20, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
+//                .shadow(color: cardShow ? .gray : .clear, radius: cardShow ? 1 : 0)
+//                .offset(y: cardShow ? 0 : UIScreen.main.bounds.height/2)
+//                .opacity(cardShow ? 1 : 0)
+//                .padding()
+//                .animation(.default)
+//
+//            }
         }
         .edgesIgnoringSafeArea(.all)
     }

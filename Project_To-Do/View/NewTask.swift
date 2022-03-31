@@ -74,53 +74,6 @@ struct NewTask: View {
                                     }
                                     
                                 }
-                              
-                              
-                                
-//                                if taskModel.editTask == nil {
-//                                    VStack(spacing: 10) {
-//                                        HStack {
-//                                            Text("When?")
-//                                                .foregroundColor(.secondary)
-//                                                .font(.title2)
-//                                                .bold()
-//
-//                                            Spacer()
-//                                        }
-//                                        LazyVStack {
-//
-//                                            HStack(spacing: 0) {
-//                                                ZStack {
-//                                                    RoundedRectangle(cornerRadius: 5)
-//                                                        .frame(width: UIScreen.main.bounds.width/1.4, height: 32)
-//                                                        .foregroundColor(appThemeColor)
-//
-//                                                    Picker("", selection: $selectedTime) {
-//                                                        ForEach((0...23), id: \.self) { hour in
-//                                                            ForEach((0...taskModel.getMinuteForData(selectedMin: selectedMinute)), id: \.self) { min in
-//                                                                if selectedMinute != 1 {
-//
-//                                                                    Text("\(taskModel.getHoursAndMinutes(hour: hour, min: min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute))) - \(taskModel.getHoursAndMinutes(hour: hour, min: (min * taskModel.getMinutemultiplyData(selectedMin: selectedMinute)) + selectedMinute))")
-//
-//                                                                }
-//                                                                else {
-//                                                                    Text(taskModel.getHoursAndMinutes(hour: hour, min: min * 5))
-//                                                                }
-//
-//                                                            }
-//                                                         }
-//                                                    }
-//                                                    .pickerStyle(.wheel)
-//                                                    .frame(width: UIScreen.main.bounds.width/1.4)
-//
-//                                                }
-//                                            }
-//
-//                                        }
-//
-//
-//                                    }
-//                                }
                                 VStack {
                                     Section {
                                         VStack {

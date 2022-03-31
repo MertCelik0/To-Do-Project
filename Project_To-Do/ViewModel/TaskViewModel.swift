@@ -17,6 +17,8 @@ class TaskViewModel: ObservableObject {
     @Published var addNewTask: Bool = false
     // Edit Task View
     @Published var editTask: Task?
+    // Settings View
+    @Published var SettingsTask: Bool = false
     // Select Week
     @Published var weekCounter: Int = 0
     
