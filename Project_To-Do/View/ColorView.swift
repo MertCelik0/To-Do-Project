@@ -42,9 +42,9 @@ struct ColorView: View {
                 Rectangle()
                     .fill(selectionColor.opacity(0.0))
                 ColorPicker("", selection: $selectionColor)
-                    .padding()
-
+                    .padding(.trailing, 25)
             }
+            
         }
         .frame(height: 50)
         .cornerRadius(10)

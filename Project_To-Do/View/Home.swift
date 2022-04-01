@@ -105,9 +105,9 @@ struct Home: View {
                     .environmentObject(taskModel)
                     .animation(.default)
                 
-                BottomCardTask(cardShow: $taskCardShow)
-                    .environmentObject(taskModel)
-                    .animation(.default)
+//                BottomCardTask(cardShow: $taskCardShow)
+//                    .environmentObject(taskModel)
+//                    .animation(.default)
                
             }
            
@@ -531,6 +531,7 @@ struct BottomCardCalendar: View {
             VStack {
                 Spacer()
                 VStack {
+                    
                     VStack(spacing: 5) {
                         DatePicker("", selection: $selectedDay, displayedComponents: .date)
                             .datePickerStyle(.graphical)
@@ -538,9 +539,9 @@ struct BottomCardCalendar: View {
                     .padding()
                 }
                 .background(Color.white)
-                .frame(height: UIScreen.main.bounds.height/2)
                 .cornerRadius(20, corners: [.topLeft, .topRight, .bottomLeft, .bottomRight])
                 .shadow(color: calendarCardShow ? .gray : .clear, radius: calendarCardShow ? 1 : 0)
+                .frame(height: UIScreen.main.bounds.height/2)
                 .offset(y: calendarCardShow ? 0 : UIScreen.main.bounds.height/2)
                 .opacity(calendarCardShow ? 1 : 0)
                 .padding()
@@ -553,26 +554,26 @@ struct BottomCardCalendar: View {
 }
 
 
-struct BottomCardTask: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
-    @Binding var cardShow: Bool
-    // Coredate Context
-    @Environment(\.managedObjectContext) var context
-
-    var body: some View {
-        ZStack {
-            // background
-            GeometryReader { _ in
-                EmptyView()
-            }
-            .background(Color.gray.opacity(0.5))
-            .opacity(cardShow ? 1: 0)
-            .animation(Animation.easeIn)
-            .onTapGesture {
-                cardShow.toggle()
-            }
-
-            //Card
+//struct BottomCardTask: View {
+//    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+//    @Binding var cardShow: Bool
+//    // Coredate Context
+//    @Environment(\.managedObjectContext) var context
+//
+//    var body: some View {
+//        ZStack {
+//            // background
+//            GeometryReader { _ in
+//                EmptyView()
+//            }
+//            .background(Color.gray.opacity(0.5))
+//            .opacity(cardShow ? 1: 0)
+//            .animation(Animation.easeIn)
+//            .onTapGesture {
+//                cardShow.toggle()
+//            }
+//
+//            //Card
 //            VStack {
 //                Spacer()
 //                VStack {
@@ -636,10 +637,10 @@ struct BottomCardTask: View {
 //                .animation(.default)
 //
 //            }
-        }
-        .edgesIgnoringSafeArea(.all)
-    }
-}
+//        }
+//        .edgesIgnoringSafeArea(.all)
+//    }
+//}
 
 struct Wave: Shape {
 
