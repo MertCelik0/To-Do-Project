@@ -46,7 +46,7 @@ struct Home: View {
     var body: some View {
         NavigationView {
             ZStack {
-                appThemeColor
+                taskModel.appThemeColor
                     .opacity(0.30)
                     .edgesIgnoringSafeArea(.top)
                 
@@ -85,7 +85,7 @@ struct Home: View {
                             .foregroundColor(.white)
                             .font(.system(size: 28))
                             .padding()
-                            .background(appThemeColor)
+                            .background(taskModel.appThemeColor)
                             .clipShape(Circle())
                             .shadow(radius: 5)
                         
@@ -379,7 +379,7 @@ struct HeaderTop: View {
                     
                     
                     Button {
-                        taskModel.SettingsTask.toggle()
+                        taskModel.settingsTask.toggle()
                     } label: {
                         Image(systemName: "gearshape")
                             .resizable()
@@ -388,10 +388,11 @@ struct HeaderTop: View {
                             .foregroundColor(.black)
 
                     }
-                    .sheet(isPresented: $taskModel.SettingsTask) {
+                    .sheet(isPresented: $taskModel.settingsTask) {
                         
                     } content: {
                         Settings()
+                            .environmentObject(taskModel)
                     }
                     
                     Button {
@@ -442,7 +443,7 @@ struct HeaderWeeks: View {
                                             .shadow(radius: 0.5)
                                         if taskModel.isSelectedDate(date: day, selectDay: selectedDay) {
                                             Capsule()
-                                                .fill(taskModel.isToday(date: day) ? appThemeColor : .black)
+                                                .fill(taskModel.isToday(date: day) ? taskModel.appThemeColor : .black)
                                                 .frame(width: 42, height: 85)
                                                 .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
                                         }
@@ -452,13 +453,13 @@ struct HeaderWeeks: View {
                                             Text(taskModel.extractDate(date: day, format: "EEE"))
                                                 .font(.system(size: 15))
                                                 .fontWeight(.semibold)
-                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
+                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
 
                                             
                                             Text(taskModel.extractDate(date: day, format: "dd"))
                                                 .font(.system(size: 15))
                                                 .fontWeight(.semibold)
-                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? appThemeColor : .black))
+                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
                                        
                                         }
                                     

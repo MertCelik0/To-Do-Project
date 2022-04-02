@@ -18,9 +18,14 @@ class TaskViewModel: ObservableObject {
     // Edit Task View
     @Published var editTask: Task?
     // Settings View
-    @Published var SettingsTask: Bool = false
+    @Published var settingsTask: Bool = false
+    // Settings View
+    @Published var themeTask: Bool = false
     // Select Week
     @Published var weekCounter: Int = 0
+    
+    @Published var appThemeColor: Color = .red
+
     
     // Intializing
     init() {

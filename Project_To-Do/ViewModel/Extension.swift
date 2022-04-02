@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-let appThemeColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
-
 extension Color {
     var components: (red: CGFloat, green: CGFloat, blue: CGFloat, opacity: CGFloat) {
 

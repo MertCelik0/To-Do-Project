@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E10E2AE627F7A98A009B072F /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10E2AE527F7A98A009B072F /* Theme.swift */; };
+		E10E2AE827F7ADE0009B072F /* Contributors.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10E2AE727F7ADE0009B072F /* Contributors.swift */; };
+		E10E2AEA27F86C9B009B072F /* ExampleTaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E10E2AE927F86C9B009B072F /* ExampleTaskView.swift */; };
 		E12408F827EE48AE00B77A34 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12408F727EE48AE00B77A34 /* ColorView.swift */; };
 		E12A013627EE663800CEC8AE /* SegmentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12A013527EE663800CEC8AE /* SegmentView.swift */; };
 		E12A014E27EF7C9F00CEC8AE /* CustomTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = E12A014D27EF7C9F00CEC8AE /* CustomTextField.swift */; };
@@ -44,6 +47,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E10E2AE527F7A98A009B072F /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		E10E2AE727F7ADE0009B072F /* Contributors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contributors.swift; sourceTree = "<group>"; };
+		E10E2AE927F86C9B009B072F /* ExampleTaskView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleTaskView.swift; sourceTree = "<group>"; };
 		E12408F727EE48AE00B77A34 /* ColorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		E12A013527EE663800CEC8AE /* SegmentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentView.swift; sourceTree = "<group>"; };
 		E12A014D27EF7C9F00CEC8AE /* CustomTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextField.swift; sourceTree = "<group>"; };
@@ -160,6 +166,9 @@
 				E1E4017927E61902006499AB /* DynamicFilteredView.swift */,
 				E12A014D27EF7C9F00CEC8AE /* CustomTextField.swift */,
 				E1E8155927F5E4CD005335ED /* Settings.swift */,
+				E10E2AE527F7A98A009B072F /* Theme.swift */,
+				E10E2AE727F7ADE0009B072F /* Contributors.swift */,
+				E10E2AE927F86C9B009B072F /* ExampleTaskView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -311,14 +320,17 @@
 				E12A014E27EF7C9F00CEC8AE /* CustomTextField.swift in Sources */,
 				E12A490A27E263F80037015A /* Persistence.swift in Sources */,
 				E1E4017A27E61902006499AB /* DynamicFilteredView.swift in Sources */,
+				E10E2AE627F7A98A009B072F /* Theme.swift in Sources */,
 				E12A013627EE663800CEC8AE /* SegmentView.swift in Sources */,
 				E1E4017827E60B88006499AB /* TaskViewModel.swift in Sources */,
 				E1E8155A27F5E4CD005335ED /* Settings.swift in Sources */,
 				E12408F827EE48AE00B77A34 /* ColorView.swift in Sources */,
 				E12A490D27E263F80037015A /* Project_To_Do.xcdatamodeld in Sources */,
 				E12A493127E264480037015A /* Home.swift in Sources */,
+				E10E2AEA27F86C9B009B072F /* ExampleTaskView.swift in Sources */,
 				E1E4017C27E624A6006499AB /* NewTask.swift in Sources */,
 				E12A490127E263F60037015A /* Project_To_DoApp.swift in Sources */,
+				E10E2AE827F7ADE0009B072F /* Contributors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

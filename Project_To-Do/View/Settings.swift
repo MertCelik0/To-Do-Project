@@ -10,20 +10,32 @@ import SwiftUI
 struct Settings: View {
     //  @Environment(\.dismiss) var dismiss
     @Environment(\.presentationMode) var presentationMode
-    @State var taskColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
+    @EnvironmentObject var taskModel: TaskViewModel
 
     var body: some View {
         NavigationView {
             List {
-                 Text("Theme")
-                 Text("Hello World")
-                 Text("Hello World")
-             }
+                Section {
+                    NavigationLink(destination: Theme()) {
+                        Text("Theme")
+                            .foregroundColor(.black)
+                    }
+                } header: {
+                }
+                
+                Section {
+                    NavigationLink(destination: Contributors()) {
+                        Text("Contributors")
+                            .foregroundColor(.black)
+                    }
+                } header: {
+                }
+            }.listStyle(InsetGroupedListStyle())
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     HStack {
-                        Text("Settings").font(.title).foregroundColor(appThemeColor).bold()
+                        Text("Settings").font(.title).foregroundColor(taskModel.appThemeColor).bold()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
