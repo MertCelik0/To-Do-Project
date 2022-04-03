@@ -16,7 +16,7 @@ struct Settings: View {
         NavigationView {
             List {
                 Section {
-                    NavigationLink(destination: Theme()) {
+                    NavigationLink(destination: Theme().environmentObject(taskModel)) {
                         Text("Theme")
                             .foregroundColor(.black)
                     }
@@ -48,11 +48,5 @@ struct Settings: View {
                 }
             }
         }
-    }
-}
-
-struct Settings_Previews: PreviewProvider {
-    static var previews: some View {
-        Settings()
     }
 }

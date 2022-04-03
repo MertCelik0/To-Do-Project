@@ -34,14 +34,13 @@ struct Home: View {
     @Environment(\.managedObjectContext) var context
     
     // Edit Button Context
-    @Environment(\.editMode) var editMode
+   // @Environment(\.editMode) var editMode
 
     @State var calendarCardShow = false
     @State var taskCardShow = false
 
     // Selected Day
     @State var selectedDay: Date = Date()
-    
 
     var body: some View {
         NavigationView {
@@ -110,7 +109,6 @@ struct Home: View {
 //                    .animation(.default)
                
             }
-           
         }
         
 
@@ -146,7 +144,7 @@ struct Home: View {
 }
 
 struct TaskView: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @EnvironmentObject var taskModel: TaskViewModel
     @Binding var selectedDay: Date
     @Binding var taskCardShow: Bool
     @State var currentTime: Date = Date()
@@ -179,8 +177,8 @@ struct TaskCardView: View {
     var task: Task
     var taskColor: Color
     
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
-    
+    @EnvironmentObject var taskModel: TaskViewModel
+
     var currentTime: Date
     
     var body: some View {
@@ -314,7 +312,7 @@ struct TaskCardView: View {
 }
 
 struct Header: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @EnvironmentObject var taskModel: TaskViewModel
     @Binding var calendarCardShow: Bool
     @Binding var selectedDay: Date
 
@@ -337,10 +335,9 @@ struct Header: View {
 }
 
 struct HeaderTop: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @EnvironmentObject var taskModel: TaskViewModel
     @Binding var calendarCardShow: Bool
     @Binding var selectedDay: Date
-
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
             HStack {
@@ -416,10 +413,9 @@ struct HeaderTop: View {
 }
 
 struct HeaderWeeks: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @EnvironmentObject var taskModel: TaskViewModel
     @Namespace var animation
     @Binding var selectedDay: Date
-
     var body: some View {
 //                        Button {
 //                            withAnimation {
@@ -511,7 +507,7 @@ struct HeaderWeeks: View {
 
 
 struct BottomCardCalendar: View {
-    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
+    @EnvironmentObject var taskModel: TaskViewModel
     @Binding var calendarCardShow: Bool
     @Binding var selectedDay: Date
 
@@ -536,6 +532,7 @@ struct BottomCardCalendar: View {
                     VStack(spacing: 5) {
                         DatePicker("", selection: $selectedDay, displayedComponents: .date)
                             .datePickerStyle(.graphical)
+                            .accentColor(taskModel.appThemeColor)
                     }
                     .padding()
                 }

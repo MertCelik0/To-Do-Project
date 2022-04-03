@@ -9,9 +9,7 @@ import SwiftUI
 
 struct Theme: View {
     //  @Environment(\.dismiss) var dismiss
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var taskModel: TaskViewModel
-
     var body: some View {
         NavigationView {
             List {
@@ -51,7 +49,8 @@ struct Theme: View {
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 15)                            .stroke(Color.secondary, lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .stroke(Color.secondary, lineWidth: 1)
                                 )
                                 .frame(width: 100, height: 40)
                             
@@ -61,7 +60,8 @@ struct Theme: View {
                             RoundedRectangle(cornerRadius: 15)
                                 .fill(Color.white)
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 15)                            .stroke(Color.secondary, lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 15)
+                                        .stroke(Color.secondary, lineWidth: 1)
                                 )
                                 .frame(width: 100, height: 40)
                             
@@ -115,11 +115,5 @@ struct Theme: View {
                 }
             }
         }
-    }
-}
-
-struct Theme_Previews: PreviewProvider {
-    static var previews: some View {
-        Theme()
     }
 }

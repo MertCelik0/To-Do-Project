@@ -24,7 +24,7 @@ class TaskViewModel: ObservableObject {
     // Select Week
     @Published var weekCounter: Int = 0
     
-    @Published var appThemeColor: Color = .red
+    @Published var appThemeColor: Color = Color(UIColor(named: "appThemeColor")!)
 
     
     // Intializing
