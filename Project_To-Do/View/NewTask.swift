@@ -17,7 +17,7 @@ struct NewTask: View {
     @State var taskDate: Date = Date()
     @State var selectStartTime: Date = Date()
     @State var selectEndTime: Date = Date()
-    @State var taskColor: Color = Color(red: 97/255.0, green: 152/255.0, blue: 142/255.0)
+    @State var taskColor: Color
     @State var taskTimeRange: Int = 0
     @State var hoursSelectedIndex: Int = 0
     @State var beforeSelectedHour: Int = 0

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct Theme: View {
     //  @Environment(\.dismiss) var dismiss
+    @Environment(\.presentationMode) var presentationMode
+
     @EnvironmentObject var taskModel: TaskViewModel
     var body: some View {
         NavigationView {
@@ -113,7 +115,14 @@ struct Theme: View {
                         Text("Theme").font(.title).foregroundColor(taskModel.appThemeColor).bold()
                     }
                 }
-            }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        Image(systemName: "xmark")
+                            .foregroundColor(.black)
+                    }
+                }            }
         }
     }
 }

@@ -9,42 +9,40 @@ import SwiftUI
 
 struct Settings: View {
     //  @Environment(\.dismiss) var dismiss
-    @Environment(\.presentationMode) var presentationMode
+    
     @EnvironmentObject var taskModel: TaskViewModel
-
+    @State var openTheme: Bool = false
     var body: some View {
-        NavigationView {
-            List {
-                Section {
-                    NavigationLink(destination: Theme().environmentObject(taskModel)) {
-                        Text("Theme")
-                            .foregroundColor(.black)
-                    }
-                } header: {
+        List {
+            Section {
+                Button {
+                    openTheme.toggle()
+                } label: {
+                    Text("Theme")
+                        .foregroundColor(.black)
                 }
+            } header: {
+            }
+            .sheet(isPresented: $openTheme) {
                 
-                Section {
-                    NavigationLink(destination: Contributors()) {
-                        Text("Contributors")
-                            .foregroundColor(.black)
-                    }
-                } header: {
+            } content: {
+                Theme()
+                    .environmentObject(taskModel)
+            }
+            
+            Section {
+                NavigationLink(destination: Contributors()) {
+                    Text("Contributors")
+                        .foregroundColor(.black)
                 }
-            }.listStyle(InsetGroupedListStyle())
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    HStack {
-                        Text("Settings").font(.title).foregroundColor(taskModel.appThemeColor).bold()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        presentationMode.wrappedValue.dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .foregroundColor(.black)
-                    }
+            } header: {
+            }
+        }.listStyle(InsetGroupedListStyle())
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                HStack {
+                    Text("Settings").font(.title).foregroundColor(taskModel.appThemeColor).bold()
                 }
             }
         }

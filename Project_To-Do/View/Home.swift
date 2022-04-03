@@ -96,7 +96,7 @@ struct Home: View {
                 .sheet(isPresented: $taskModel.addNewTask) {
                     taskModel.editTask = nil
                 } content: {
-                    NewTask(taskDate: selectedDay)
+                    NewTask(taskDate: selectedDay, taskColor: taskModel.appThemeColor)
                         .environmentObject(taskModel)
                 }
                 
@@ -109,8 +109,9 @@ struct Home: View {
 //                    .animation(.default)
                
             }
+            
         }
-        
+       
 
 //            // Edit button
 //            .overlay(
@@ -177,7 +178,7 @@ struct TaskCardView: View {
     var task: Task
     var taskColor: Color
     
-    @EnvironmentObject var taskModel: TaskViewModel
+    @ObservedObject var taskModel: TaskViewModel = TaskViewModel()
 
     var currentTime: Date
     
@@ -304,9 +305,8 @@ struct TaskCardView: View {
                 .hTrailing()
             }
         }
-        .background(Color.white)
-    
         .padding()
+        .padding([.leading,.trailing], 15)
     }
     
 }
@@ -374,22 +374,12 @@ struct HeaderTop: View {
                             .foregroundColor(.black)
                     }
                     
-                    
-                    Button {
-                        taskModel.settingsTask.toggle()
-                    } label: {
+                    NavigationLink(destination: Settings().environmentObject(taskModel)) {
                         Image(systemName: "gearshape")
                             .resizable()
                             .frame(width: 25, height: 25)
                             .clipShape(Circle())
                             .foregroundColor(.black)
-
-                    }
-                    .sheet(isPresented: $taskModel.settingsTask) {
-                        
-                    } content: {
-                        Settings()
-                            .environmentObject(taskModel)
                     }
                     
                     Button {
@@ -416,91 +406,101 @@ struct HeaderWeeks: View {
     @EnvironmentObject var taskModel: TaskViewModel
     @Namespace var animation
     @Binding var selectedDay: Date
+    
+
     var body: some View {
-//                        Button {
-//                            withAnimation {
-//                                taskModel.weekCounter -= 1
-//                                taskModel.fetchCurrentWeek()
-//                                selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: selectedDay)!
-//                            }
-//
-//                        } label: {
-//                            Image(systemName: "arrowtriangle.left.fill")
-//                                .foregroundColor(.black)
-//                        }
-                        
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(alignment: .center, spacing: 5) {
-                                ForEach(taskModel.Week, id: \.self) { day in
-                                    ZStack {
-                                        Capsule()
-                                            .fill(.white)
-                                            .frame(width: 47, height: 90)
-                                            .shadow(radius: 0.5)
-                                        if taskModel.isSelectedDate(date: day, selectDay: selectedDay) {
-                                            Capsule()
-                                                .fill(taskModel.isToday(date: day) ? taskModel.appThemeColor : .black)
-                                                .frame(width: 42, height: 85)
-                                                .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
-                                        }
-                                        
-                                        VStack(spacing: 6) {
-                                            
-                                            Text(taskModel.extractDate(date: day, format: "EEE"))
-                                                .font(.system(size: 15))
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
-
-                                            
-                                            Text(taskModel.extractDate(date: day, format: "dd"))
-                                                .font(.system(size: 15))
-                                                .fontWeight(.semibold)
-                                                .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
-                                       
-                                        }
-                                    
-                                        DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
-                                            ZStack {
-                                                Circle()
-                                                    .fill(Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
-                                                    .opacity(object.isCompleted ? 0.5 : 1)
-                                                    .frame(width: 13, height: 13)
-                                                    .background(
-                                                        Circle()
-                                                            .strokeBorder(.white, lineWidth: 7)
-                                                            .frame(width: 13, height: 13)
-                                                    )
-                                                Text(object.taskTitle?.prefix(1) ?? "")
-                                                    .foregroundColor(.white)
-                                                    .font(.system(size: 10))
-                                                
-                                            }
-                                           
-                                            }
-                                        .offset(y: 29)
-                                    }
-                                    .onTapGesture {
-                                        withAnimation {
-                                            selectedDay = day
-                                        }
-                                    }
-                                }
-                            }
-                            .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
-
+ 
+//            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(alignment: .center, spacing: 5) {
+                    Button {
+                        withAnimation {
+                            taskModel.weekCounter -= 1
+                            taskModel.fetchCurrentWeek()
+                            selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: selectedDay)!
                         }
-                        .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
 
-        //                Button {
-        //                    withAnimation {
-        //                        taskModel.weekCounter += 1
-        //                        taskModel.fetchCurrentWeek()
-        //                        taskModel.selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: taskModel.selectedDay)!
-        //                    }
-        //                } label: {
-        //                    Image(systemName: "arrowtriangle.right.fill")
-        //                        .foregroundColor(.black)
-        //                }
+                    } label: {
+                        Image(systemName: "arrowtriangle.left.fill")
+                            .foregroundColor(.black)
+                    }
+                    
+                    ForEach(taskModel.Week, id: \.self) { day in
+                        ZStack {
+                            Capsule()
+                                .fill(.white)
+                                .frame(width: 47, height: 90)
+                                .shadow(radius: 0.5)
+                            if taskModel.isSelectedDate(date: day, selectDay: selectedDay) {
+                                Capsule()
+                                    .fill(taskModel.isToday(date: day) ? taskModel.appThemeColor : .black)
+                                    .frame(width: 42, height: 85)
+                                    .matchedGeometryEffect(id: "CURRENTDAY", in: animation)
+                            }
+                            
+                            VStack(spacing: 6) {
+                                
+                                Text(taskModel.extractDate(date: day, format: "EEE"))
+                                    .font(.system(size: 15))
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
+
+                                
+                                Text(taskModel.extractDate(date: day, format: "dd"))
+                                    .font(.system(size: 15))
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(taskModel.isSelectedDate(date: day, selectDay: selectedDay) ? .white : (taskModel.isToday(date: day) ? taskModel.appThemeColor : .black))
+                           
+                            }
+                        
+                            DynamicFilteredCountView(dateToFilter: day) { (object: Task) in
+                                ZStack {
+                                    Circle()
+                                        .fill(Color(red: CGFloat(object.taskColor_R), green: CGFloat(object.taskColor_G), blue: CGFloat(object.taskColor_B), opacity: CGFloat(object.taskColor_A)))
+                                        .opacity(object.isCompleted ? 0.5 : 1)
+                                        .frame(width: 13, height: 13)
+                                        .background(
+                                            Circle()
+                                                .strokeBorder(.white, lineWidth: 7)
+                                                .frame(width: 13, height: 13)
+                                        )
+                                    Text(object.taskTitle?.prefix(1) ?? "")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 10))
+                                    
+                                }
+                               
+                                }
+                            .offset(y: 29)
+                        }
+                        .onTapGesture {
+                            withAnimation {
+                                selectedDay = day
+                            }
+                        }
+                        
+                    }
+                    
+                    Button {
+                        withAnimation {
+                            taskModel.weekCounter += 1
+                            taskModel.fetchCurrentWeek()
+                            selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: selectedDay)!
+                        }
+                    } label: {
+                        Image(systemName: "arrowtriangle.right.fill")
+                            .foregroundColor(.black)
+                    }
+                }
+                .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
+
+//            }
+//            .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
+   
+            
+       
+        
+                     
+   
     }
 }
 
