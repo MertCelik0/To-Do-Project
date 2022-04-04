@@ -11,7 +11,14 @@ struct Theme: View {
     //  @Environment(\.dismiss) var dismiss
     @Environment(\.presentationMode) var presentationMode
 
+    //MARK: CoreData Context
+    @Environment(\.managedObjectContext) var context
+    
     @EnvironmentObject var taskModel: TaskViewModel
+    
+    
+    private var colorData = ColorData()
+    
     var body: some View {
         NavigationView {
             List {
@@ -26,6 +33,9 @@ struct Theme: View {
                 Section {
                     VStack {
                         ColorView(selectionColor: $taskModel.appThemeColor)
+                            .onChange(of: taskModel.appThemeColor) { newValue in
+                                colorData.saveColor(color: taskModel.appThemeColor)
+                            }
                     }
                 } header: {
                     HStack {

@@ -108,3 +108,26 @@ extension UIApplication {
         sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
+
+struct ColorData {
+    private var COLOR_KEY = "COLOR_KEY"
+    private var userDefaults = UserDefaults.standard
+    
+    func saveColor(color: Color) {
+        let color = UIColor(color).cgColor
+        
+        if let components = color.components {
+            userDefaults.set(components, forKey: COLOR_KEY)
+            print("Color saved!!")
+        }
+    }
+    
+    func loadColor() -> Color {
+        guard let array = userDefaults.object(forKey: COLOR_KEY) as? [CGFloat] else { return Color(red: 123.0/255, green: 166.0/255, blue: 255.0/255, opacity: 255.0/255) }
+        
+        let color = Color(red: array[0], green: array[1], blue: array[2], opacity: array[3])
+        print(color)
+        print("Color loaded!")
+        return color
+    }
+}

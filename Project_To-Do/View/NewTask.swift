@@ -119,6 +119,9 @@ struct NewTask: View {
                                                         for time in array {
                                                             filteredTimeArray.append(time)
                                                         }
+                                                        selectEndTime = selectStartTime
+                                                        hoursSelectedIndex = 0
+                                                        beforeSelectedHour = 0
                                                     })
                                             }
                                           

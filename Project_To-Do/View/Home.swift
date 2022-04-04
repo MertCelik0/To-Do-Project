@@ -42,6 +42,8 @@ struct Home: View {
     // Selected Day
     @State var selectedDay: Date = Date()
 
+    private var colorData = ColorData()
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -111,8 +113,9 @@ struct Home: View {
             }
             
         }
-       
-
+        .onAppear {
+            taskModel.appThemeColor = colorData.loadColor()
+        }
 //            // Edit button
 //            .overlay(
 //                Button(action: {
@@ -407,22 +410,23 @@ struct HeaderWeeks: View {
     @Namespace var animation
     @Binding var selectedDay: Date
     
+    @GestureState private var dragOffset: CGFloat = 0
 
     var body: some View {
  
-//            ScrollView(.horizontal, showsIndicators: false) {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(alignment: .center, spacing: 5) {
-                    Button {
-                        withAnimation {
-                            taskModel.weekCounter -= 1
-                            taskModel.fetchCurrentWeek()
-                            selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: selectedDay)!
-                        }
-
-                    } label: {
-                        Image(systemName: "arrowtriangle.left.fill")
-                            .foregroundColor(.black)
-                    }
+//                    Button {
+//                        withAnimation {
+//                            taskModel.weekCounter -= 1
+//                            taskModel.fetchCurrentWeek()
+//                            selectedDay = Calendar.current.date(byAdding: .day, value: -7, to: selectedDay)!
+//                        }
+//
+//                    } label: {
+//                        Image(systemName: "arrowtriangle.left.fill")
+//                            .foregroundColor(.black)
+//                    }
                     
                     ForEach(taskModel.Week, id: \.self) { day in
                         ZStack {
@@ -480,22 +484,36 @@ struct HeaderWeeks: View {
                         
                     }
                     
-                    Button {
-                        withAnimation {
-                            taskModel.weekCounter += 1
-                            taskModel.fetchCurrentWeek()
-                            selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: selectedDay)!
-                        }
-                    } label: {
-                        Image(systemName: "arrowtriangle.right.fill")
-                            .foregroundColor(.black)
-                    }
+//                    Button {
+//                        withAnimation {
+//                            taskModel.weekCounter += 1
+//                            taskModel.fetchCurrentWeek()
+//                            selectedDay = Calendar.current.date(byAdding: .day, value: 7, to: selectedDay)!
+//                        }
+//                    } label: {
+//                        Image(systemName: "arrowtriangle.right.fill")
+//                            .foregroundColor(.black)
+//                    }
                 }
                 .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
 
-//            }
-//            .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
-   
+            }
+            .frame(width: UIScreen.main.bounds.size.width, alignment: .center)
+            .gesture(
+                DragGesture()
+                    .updating($dragOffset) { (value, gestureState, transaction) in
+                        let delta = value.location.x - value.startLocation.x
+                        if delta > 10 { // << some appropriate horizontal threshold here
+                            gestureState = delta
+                        }
+                    }
+                    .onEnded {
+                        if $0.translation.width > 100 {
+                            // Go to the previous slide
+                            print("a")
+                        }
+                    }
+            )
             
        
         
