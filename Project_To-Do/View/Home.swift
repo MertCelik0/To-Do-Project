@@ -50,7 +50,7 @@ struct Home: View {
                 taskModel.appThemeColor
                     .opacity(0.30)
                     .edgesIgnoringSafeArea(.top)
-                
+
                 VStack(spacing: 0) {
                     Section {
                         ZStack {
@@ -169,6 +169,7 @@ struct TaskView: View {
         }
 
     }
+    
 }
 
 
@@ -388,7 +389,7 @@ struct HeaderTop: View {
                     Button {
                                            
                     } label: {
-                        Image("ProfilePhoto")
+                        Image("User2")
                             .resizable()
                             .frame(width: 45, height: 45)
                             .clipShape(Circle())

@@ -47,61 +47,61 @@ struct Theme: View {
                     }
                 }
                 
-                Section {
-                    HStack {
-                        Spacer()
-                        VStack(spacing: 0) {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(
-                                    LinearGradient(
-                                        gradient: Gradient(stops: [
-                                            Gradient.Stop(color: .white, location: 0.5),
-                                            Gradient.Stop(color: .black, location: 0.5)
-                                        ]),
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing))
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(Color.secondary, lineWidth: 1)
-                                )
-                                .frame(width: 100, height: 40)
-                            
-                            Text("System")
-                        }
-                        VStack(spacing: 0) {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.white)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(Color.secondary, lineWidth: 1)
-                                )
-                                .frame(width: 100, height: 40)
-                            
-                            Text("Light")
-                        }
-                        VStack(spacing: 0) {
-                            RoundedRectangle(cornerRadius: 15)
-                                .fill(Color.black)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(Color.secondary, lineWidth: 1)
-
-                                )
-                                .frame(width: 100, height: 40)
-                            
-                            Text("Dark")
-                        }
-                        Spacer()
-                    }
-                } header: {
-                    HStack {
-                        Text("Background Color")
-                            .foregroundColor(.secondary)
-                            .font(.body)
-                            .bold()
-                        Spacer()
-                    }
-                }
+//                Section {
+//                    HStack {
+//                        Spacer()
+//                        VStack(spacing: 0) {
+//                            RoundedRectangle(cornerRadius: 15)
+//                                .fill(
+//                                    LinearGradient(
+//                                        gradient: Gradient(stops: [
+//                                            Gradient.Stop(color: .white, location: 0.5),
+//                                            Gradient.Stop(color: .black, location: 0.5)
+//                                        ]),
+//                                        startPoint: .topLeading,
+//                                        endPoint: .bottomTrailing))
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 15)
+//                                        .stroke(Color.secondary, lineWidth: 1)
+//                                )
+//                                .frame(width: 100, height: 40)
+//                            
+//                            Text("System")
+//                        }
+//                        VStack(spacing: 0) {
+//                            RoundedRectangle(cornerRadius: 15)
+//                                .fill(Color.white)
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 15)
+//                                        .stroke(Color.secondary, lineWidth: 1)
+//                                )
+//                                .frame(width: 100, height: 40)
+//                            
+//                            Text("Light")
+//                        }
+//                        VStack(spacing: 0) {
+//                            RoundedRectangle(cornerRadius: 15)
+//                                .fill(Color.black)
+//                                .overlay(
+//                                    RoundedRectangle(cornerRadius: 15)
+//                                        .stroke(Color.secondary, lineWidth: 1)
+//
+//                                )
+//                                .frame(width: 100, height: 40)
+//                            
+//                            Text("Dark")
+//                        }
+//                        Spacer()
+//                    }
+//                } header: {
+//                    HStack {
+//                        Text("Background Color")
+//                            .foregroundColor(.secondary)
+//                            .font(.body)
+//                            .bold()
+//                        Spacer()
+//                    }
+//                }
                 
                 Section {
                     VStack {
@@ -132,7 +132,9 @@ struct Theme: View {
                         Image(systemName: "xmark")
                             .foregroundColor(.black)
                     }
-                }            }
+                }
+                
+            }
         }
     }
 }

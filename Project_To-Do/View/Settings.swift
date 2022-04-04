@@ -12,6 +12,8 @@ struct Settings: View {
     
     @EnvironmentObject var taskModel: TaskViewModel
     @State var openTheme: Bool = false
+    @State var openContributors: Bool = false
+
     var body: some View {
         List {
             Section {
@@ -31,12 +33,21 @@ struct Settings: View {
             }
             
             Section {
-                NavigationLink(destination: Contributors()) {
+                Button {
+                    openContributors.toggle()
+                } label: {
                     Text("Contributors")
                         .foregroundColor(.black)
                 }
             } header: {
             }
+            .sheet(isPresented: $openContributors) {
+                
+            } content: {
+                Contributors()
+                    .environmentObject(taskModel)
+            }
+            
         }.listStyle(InsetGroupedListStyle())
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
